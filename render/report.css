@@ -145,6 +145,8 @@ html { scroll-padding-top: 80px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; block-size: 24px; padding: 0 10px; border-radius: 7px; background: var(--panel); font-size: var(--fs-12); font-weight: 500; color: var(--ink-2); white-space: nowrap; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .chip--first { color: var(--first); background: rgb(28 124 74 / 0.1); }
 .chip--first::before { content: ""; inline-size: 6px; block-size: 6px; border-radius: 50%; background: currentColor; }
+.chip--blocked { color: var(--mark); background: color-mix(in srgb, var(--mark) 10%, transparent); }
+.chip--blocked::before { content: ""; inline-size: 6px; block-size: 6px; border-radius: 50%; background: currentColor; }
 
 /* Screens and marks. Geometry is percent of the captured viewport, so marks scale with the image. */
 .shot, .crop { position: relative; margin: 0; overflow: hidden; border-radius: var(--r-m); border: 1px solid var(--line); background: var(--sheet); }

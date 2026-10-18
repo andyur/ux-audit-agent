@@ -106,7 +106,13 @@ const refLink = r => r.startsWith('F')
 const refs = list => list?.length ? `<span class="refs">${list.map(refLink).join('')}</span>` : '';
 
 const m = audit.meta;
-const interactionsToValue = capture.steps.find(s => s.id === audit.journey.find(j => j.firstValue)?.step)?.interactionsSoFar;
+const valueStep = audit.journey.find(j => j.firstValue)?.step;
+const interactionsToValue = capture.steps.find(s => s.id === valueStep)?.interactionsSoFar;
+// A partial or blocked audit has no first-value step; the stat then names where the task stopped.
+const stopStep = audit.journey.find(j => j.status === 'blocked')?.step ?? audit.journey.at(-1).step;
+const valueStat = valueStep
+  ? `<span class="stat">${interactionsToValue}</span><span class="stat__label">${icon('flag')}Interactions to first value</span><span class="stat__sub">Reached at step ${steps[valueStep].n}</span>`
+  : `<span class="stat">None</span><span class="stat__label">${icon('flag')}First value</span><span class="stat__sub">Not reached; stopped at step ${steps[stopStep].n}</span>`;
 const statusClass = { completed: '', partial: ' status--partial', blocked: ' status--blocked' }[m.status] ?? '';
 const sevCount = audit.findings.reduce((a, f) => (a[f.severity] = (a[f.severity] || 0) + 1, a), {});
 const findingMix = Object.entries(sevCount).map(([k, n]) => `${n} ${SEVERITY[k].label.toLowerCase()}`).join(', ').replace(/^./, c => c.toUpperCase());
@@ -149,7 +155,7 @@ const header = `
   <div class="outcome">
     <div class="outcome__top"><span class="status${statusClass}">${esc(m.status[0].toUpperCase() + m.status.slice(1))}</span><p class="outcome__note">${esc(m.statusNote)}</p></div>
     <div class="stats">
-      <div><span class="stat">${interactionsToValue}</span><span class="stat__label">${icon('flag')}Interactions to first value</span><span class="stat__sub">Reached at step ${steps[audit.journey.find(j => j.firstValue).step].n}</span></div>
+      <div>${valueStat}</div>
       <div><span class="stat">${capture.interactions}</span><span class="stat__label">${icon('check')}Interactions in total</span><span class="stat__sub">Across ${capture.steps.length} screens</span></div>
       <div><span class="stat">${audit.findings.length}</span><span class="stat__label">${icon('search')}Findings</span><span class="stat__sub">${findingMix}</span></div>
     </div>
@@ -196,7 +202,7 @@ const journey = `
             <div><dt>${icon('cursor')}<span>Action</span></dt><dd>${esc(s.action)}</dd></div>
             <div><dt>${icon('monitor')}<span>Product response</span></dt><dd>${esc(j.response ?? s.response)}</dd></div>
           </dl>
-          <div class="meta">${j.firstValue ? '<span class="chip chip--first">First value</span>' : ''}<span class="chip">${s.interactionsSoFar ? `${s.interactionsSoFar} interactions` : 'Start'}</span>${j.status === 'done-verified-separately' ? '<span class="chip">Verified in a second run</span>' : ''}${(j.findings ?? []).map(id => `<a class="ref ref--f" href="#${id}"><i>${fIndex[id]}</i>${esc(audit.findings.find(f => f.id === id).target.label)}</a>`).join('')}</div>
+          <div class="meta">${j.firstValue ? '<span class="chip chip--first">First value</span>' : ''}<span class="chip">${s.interactionsSoFar ? `${s.interactionsSoFar} interactions` : 'Start'}</span>${j.status === 'done-verified-separately' ? '<span class="chip">Verified in a second run</span>' : ''}${j.status === 'blocked' ? '<span class="chip chip--blocked">Blocked here</span>' : ''}${(j.findings ?? []).map(id => `<a class="ref ref--f" href="#${id}"><i>${fIndex[id]}</i>${esc(audit.findings.find(f => f.id === id).target.label)}</a>`).join('')}</div>
         </div>
       </li>`;
     }).join('')}
@@ -365,8 +371,14 @@ console.log('wrote', `${dir}index.html`);
 // --single: one shareable file with every screenshot embedded.
 if (process.argv.includes('--single')) {
   const files = [...new Set([...html.matchAll(/src="(assets\/[^"]+)"/g)].map(x => x[1]))];
-  const data = Object.fromEntries(await Promise.all(files.map(async f => [f, `data:image/png;base64,${(await readFile(`${dir}${f}`)).toString('base64')}`])));
-  const single = html.replace(/src="(assets\/[^"]+)"/g, (_, f) => `src="${data[f]}"`);
+  const mime = f => (f.endsWith('.png') ? 'image/png' : 'image/jpeg');
+  const data = Object.fromEntries(await Promise.all(files.map(async f => [f, `data:${mime(f)};base64,${(await readFile(`${dir}${f}`)).toString('base64')}`])));
+  // Each screenshot is embedded once; its other uses (thumbnail, zoom, full screen) copy it on load.
+  const seen = new Set();
+  const blank = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  const single = html
+    .replace(/src="(assets\/[^"]+)"/g, (_, f) => (seen.has(f) ? `data-asset="${f}" src="${blank}"` : (seen.add(f), `data-asset="${f}" src="${data[f]}"`)))
+    .replace('</body>', `<script>for (const i of document.querySelectorAll('img[data-asset]')) i.src = document.querySelector(\`img[data-asset="\${i.dataset.asset}"]\`).src;</script></body>`);
   const name = `${slug}-task-audit.html`;
   await writeFile(`${dir}${name}`, single);
   console.log('wrote', `${dir}${name}`, `${(single.length / 1e6).toFixed(1)} MB`);

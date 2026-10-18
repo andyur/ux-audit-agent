@@ -21,7 +21,13 @@ In Claude Code:
 /plugin install ux-audit-agent@andyur
 ```
 
-Requirements: Node 20 or newer and Google Chrome. On first run the agent installs its one dependency, Playwright, which drives your Chrome; no separate browser is downloaded. Tested on macOS. On Linux or Windows, set `UX_AUDIT_CHROME` to your Chrome binary if it is not found.
+Requirements: Node 20 or newer and Chrome, Edge or Brave. On first run the agent installs its one dependency, Playwright, which drives your browser; no separate browser is downloaded. Tested on macOS with Chrome.
+
+## Which browser it uses
+
+- **Your own browser, signed in (default).** The agent opens a new window in your Chrome, Edge or Brave, in the profile you used last, so the product is already signed in. Your browser asks once per audit to allow the connection, and shows a bar saying it is controlled by automated software while the audit runs. The agent works only in the window it opened and closes it at the end. This needs remote debugging switched on once at `chrome://inspect/#remote-debugging` (version 144 or newer); the agent tells you if it is off.
+- **A separate window.** If you would rather not connect your browser, or you use Safari or Firefox, the agent opens a separate Chrome, Edge or Brave profile where you sign in to the product once. With none of those installed, it can download Chromium (about 150 MB) if you agree.
+- **First visit.** For signup and onboarding audits it uses a throwaway profile with no saved data.
 
 ## Use
 
@@ -37,7 +43,8 @@ After a report is built, the agent can offer a link your team can open in a brow
 
 ## What it will not do
 
-- Create accounts, type passwords or pass 2FA. If the task needs an account, it opens Chrome and you sign in yourself.
+- Create accounts, type passwords or pass 2FA. If the task needs an account, you sign in yourself.
+- Read your other tabs, passwords, cookies or history in your own browser.
 - Delete, pay, subscribe, send, publish or invite without asking you first.
 - Invent conversion, revenue or user research. Findings without evidence are refused by the validator.
 
