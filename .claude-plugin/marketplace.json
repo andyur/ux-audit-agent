@@ -1,0 +1,15 @@
+{
+  "name": "andyur",
+  "description": "Plugins by Andriy Yurchenko, product designer.",
+  "owner": {
+    "name": "Andriy Yurchenko",
+    "url": "https://ayurchenko.xyz"
+  },
+  "plugins": [
+    {
+      "name": "ux-audit-agent",
+      "source": "./",
+      "description": "Task audit of a live web product with an evidence-backed HTML report."
+    }
+  ]
+}

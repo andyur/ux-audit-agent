@@ -1,0 +1,45 @@
+{
+  "name": "ux-audit-agent",
+  "repo": "https://github.com/andyur/ux-audit-agent",
+  "author": "Andriy Yurchenko",
+  "authorUrl": "https://ayurchenko.xyz",
+  "madeBy": "An AI agent following a fixed method. Not reviewed by a person.",
+  "disclaimer": "This report was produced by an AI agent following a fixed method. It is good at what is on the screen: what happened at each step, where the friction sits, and what it measured. It cannot weigh a finding against your users, your numbers or the decisions behind the product, and it cannot tell which change deserves a sprint and which can wait. That call needs a person who has shipped and fixed products like this one.",
+  "cta": {
+    "title": "Not sure what to do first?",
+    "body": "Send this report to Andriy Yurchenko, the product designer behind this agent. He replies with a short note on what he would look at first, and says so if it needs more than a note.",
+    "button": "Send the report",
+    "email": "andriy.dsgn@gmail.com",
+    "mailBody": "Hi Andriy,\n\nOur ux-audit-agent report for {product} ({url}) is attached.\n\nWhat we would like a second opinion on:\n\n",
+    "secondary": "ayurchenko.xyz",
+    "secondaryLink": "https://ayurchenko.xyz",
+    "diagnosis": {
+      "title": "Product Diagnosis",
+      "text": "A paid, deeper review: the findings checked against your users, data and plans, with a written recommendation. Scope is agreed before it starts.",
+      "button": "Product Diagnosis",
+      "link": "https://ayurchenko.xyz/product-diagnosis",
+      "mailSubject": "Product Diagnosis: {product}",
+      "mailBody": "Hi Andriy,\n\nWe ran ux-audit-agent on {product} ({url}) and would like to talk about a Product Diagnosis. The report is attached.\n\nWhat we need to decide:\nTeam and stage:\nWhen we need an answer:\n\n",
+      "aboutLabel": "What is a Product Diagnosis?",
+      "card": {
+        "text": "For decisions the screen cannot settle{case}: a written recommendation from this report, your data and a call with your team.",
+        "tags": [
+          "Starts from this report",
+          "Scope and price agreed first"
+        ],
+        "tag": "Paid"
+      }
+    },
+    "mailSubject": "Audit: {product}",
+    "card": {
+      "text": "A second opinion before you plan the work: a short note on which findings to start with, which can wait, and whether anything needs a closer look.",
+      "tags": [
+        "One email",
+        "Report attached",
+        "Reply by email"
+      ],
+      "tag": "Free"
+    },
+    "note": "Both open an email with the details filled in."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "ux-audit-agent",
+  "version": "0.1.0",
+  "description": "Task audit of a live web product for Claude Code: walks one user task in your Chrome and writes an evidence-backed HTML report.",
+  "scripts": {
+    "render": "node render/render.mjs"
+  },
+  "author": "Andriy Yurchenko (https://ayurchenko.xyz)",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andyur/ux-audit-agent.git"
+  },
+  "bin": {
+    "ux-audit": "cli/ux-audit.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright": "^1.62.1"
+  }
+}

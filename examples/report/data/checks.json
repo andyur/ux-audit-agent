@@ -1,0 +1,43 @@
+{
+  "fileSystemAccessApi": true,
+  "flowchartShortcut": {
+    "interactionsToTwoConnectedBoxes": 7,
+    "elementsAfterShortcut": {
+      "rectangle": 2,
+      "text": 1,
+      "arrow": 1
+    },
+    "hintWhileSelected": {
+      "text": "Enter to add text, Cmd + ↑↓ to create a flowchart",
+      "box": {
+        "x": 449,
+        "y": 68,
+        "width": 542,
+        "height": 24
+      },
+      "fontSize": "12px",
+      "color": "rgb(184, 184, 184)"
+    },
+    "note": "second box not yet labelled"
+  },
+  "dialogOpenAfterExport": true,
+  "checkedAt": "2026-10-14T18:32:22.629Z",
+  "exportViaSavePicker": {
+    "dialogButtons": [
+      "Export to PNG",
+      "Export to SVG",
+      "Copy PNG to clipboard"
+    ],
+    "saveCalls": [
+      {
+        "suggestedName": "Untitled-2026-10-14-2132.png",
+        "types": [
+          "image/png"
+        ],
+        "bytes": 5218,
+        "mime": "image/png"
+      }
+    ],
+    "dialogOpenAfterExport": true
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "product": "Excalidraw",
+  "url": "https://excalidraw.com",
+  "capturedAt": "2026-10-14T18:31:07.124Z",
+  "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 2,
+  "download": null,
+  "interactions": 16,
+  "totalMs": 17921,
+  "steps": [
+    {
+      "id": "s1",
+      "title": "Empty canvas, first visit",
+      "action": "Open excalidraw.com in a fresh browser profile",
+      "response": "Welcome screen with hand-drawn hints, a storage warning and a menu of Open, Help, Live collaboration, Sign up",
+      "screenshot": {
+        "file": "assets/s1.png",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "storage",
+          "label": "Storage warning",
+          "box": {
+            "x": 492.40625,
+            "y": 349.609375,
+            "width": 455.171875,
+            "height": 64.78125
+          },
+          "source": "dom"
+        },
+        {
+          "id": "menu",
+          "label": "Main menu button",
+          "box": {
+            "x": 16,
+            "y": 16,
+            "width": 36,
+            "height": 36
+          },
+          "source": "dom"
+        },
+        {
+          "id": "menuHint",
+          "label": "Hint pointing at the menu",
+          "box": {
+            "x": 74.59375,
+            "y": 130,
+            "width": 262.453125,
+            "height": 20
+          },
+          "source": "dom"
+        },
+        {
+          "id": "toolbar",
+          "label": "Tool bar",
+          "box": {
+            "x": 449,
+            "y": 16,
+            "width": 542,
+            "height": 44
+          },
+          "source": "dom"
+        },
+        {
+          "id": "share",
+          "label": "Share button",
+          "box": {
+            "x": 1322.09375,
+            "y": 16,
+            "width": 53.90625,
+            "height": 36
+          },
+          "source": "dom"
+        },
+        {
+          "id": "plus",
+          "label": "Excalidraw+ trial button",
+          "box": {
+            "x": 1206.203125,
+            "y": 19.046875,
+            "width": 92.890625,
+            "height": 16.09375
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 1919,
+      "interactionsSoFar": 0
+    },
+    {
+      "id": "s2",
+      "title": "First box with a label",
+      "action": "Pick the rectangle tool, drag a box, double-click it and type \"Request\"",
+      "response": "Box appears with centred text; the welcome screen disappears; a style panel opens on the left while the box is selected",
+      "screenshot": {
+        "file": "assets/s2.png",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "toolbarRect",
+          "label": "Rectangle tool",
+          "box": {
+            "x": 582,
+            "y": 20,
+            "width": 36,
+            "height": 36
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 3427,
+      "interactionsSoFar": 5
+    },
+    {
+      "id": "s3",
+      "title": "Two boxes connected by an arrow",
+      "action": "Draw a second box labelled \"Review\", pick the arrow tool and drag from the first box to the second",
+      "response": "Arrow snaps to both boxes; diagram complete on canvas",
+      "screenshot": {
+        "file": "assets/s3.png",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "arrowTool",
+          "label": "Arrow tool",
+          "box": {
+            "x": 702,
+            "y": 20,
+            "width": 36,
+            "height": 36
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 4590,
+      "interactionsSoFar": 13
+    },
+    {
+      "id": "s4",
+      "title": "Main menu open",
+      "action": "Open the main menu (top-left)",
+      "response": "Dropdown with file, export, collaboration, preference and social items",
+      "screenshot": {
+        "file": "assets/s4.png",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "exportItem",
+          "label": "Export image item",
+          "box": {
+            "x": 24,
+            "y": 134,
+            "width": 213.6875,
+            "height": 32
+          },
+          "source": "dom"
+        },
+        {
+          "id": "saveItem",
+          "label": "Save to item",
+          "box": {
+            "x": 24,
+            "y": 101,
+            "width": 213.6875,
+            "height": 32
+          },
+          "source": "dom"
+        },
+        {
+          "id": "menuPanel",
+          "label": "Menu panel",
+          "box": {
+            "x": 16,
+            "y": 60,
+            "width": 229.6875,
+            "height": 648
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 5218,
+      "interactionsSoFar": 14
+    },
+    {
+      "id": "s5",
+      "title": "Export image dialog",
+      "action": "Choose \"Export image...\"",
+      "response": "Modal with a live preview, background, dark mode, embed scene and scale options, and PNG, SVG and Copy buttons",
+      "screenshot": {
+        "file": "assets/s5.png",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "dialog",
+          "label": "Export dialog",
+          "box": {
+            "x": 249,
+            "y": 270,
+            "width": 942,
+            "height": 360
+          },
+          "source": "dom"
+        },
+        {
+          "id": "embed",
+          "label": "Embed scene option",
+          "box": {
+            "x": 850.703125,
+            "y": 399.3125,
+            "width": 119.78125,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "scale",
+          "label": "Scale option",
+          "box": {
+            "x": 850.703125,
+            "y": 445.3125,
+            "width": 36.265625,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "pngBtn",
+          "label": "PNG button",
+          "box": {
+            "x": 850.703125,
+            "y": 590,
+            "width": 84.203125,
+            "height": 40
+          },
+          "source": "dom"
+        },
+        {
+          "id": "copyBtn",
+          "label": "Copy to clipboard button",
+          "box": {
+            "x": 1039.078125,
+            "y": 590,
+            "width": 151.921875,
+            "height": 40
+          },
+          "source": "dom"
+        },
+        {
+          "id": "filename",
+          "label": "File name field",
+          "box": null,
+          "source": "missing"
+        }
+      ],
+      "elapsedMs": 6782,
+      "interactionsSoFar": 15
+    },
+    {
+      "id": "s6",
+      "title": "After pressing PNG",
+      "action": "Press the PNG button",
+      "response": "No download observed",
+      "screenshot": {
+        "file": "assets/s6.png",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "dialog2",
+          "label": "Export dialog after download",
+          "box": {
+            "x": 249,
+            "y": 270,
+            "width": 942,
+            "height": 360
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 17919,
+      "interactionsSoFar": 16
+    }
+  ]
+}
