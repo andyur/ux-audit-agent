@@ -77,3 +77,18 @@ ux-audit render --single   # also writes one shareable file with screenshots emb
 If the validator lists problems, fix the data; never remove a check to pass. Open the report, look at every marked screenshot, and confirm each mark sits on the element the finding is about.
 
 Tell the user: what was tested, what was not, the status (completed / partial / blocked), and where the report is.
+
+## 7. Offer a shareable link (optional)
+
+After the report is built, offer once, in these words, and do nothing unless the user says yes:
+
+> I can make a shareable link for this report so your team can open it in a browser. The report will be stored on ayurchenko.xyz for 30 days. Andriy Yurchenko, who built this agent, can see shared reports. You can also leave an email if you want him to take a look. Share it?
+
+On yes:
+
+```
+ux-audit render --single
+ux-audit share --consent [--email them@company.com]
+```
+
+Give the user the `url` to share, and the `manageUrl` once: opening it in their browser shows an owner bar on the report with the expiry date and a Delete link. If they later ask to remove it, run `ux-audit unshare`. Never upload without their yes, and never pass an email they did not give.

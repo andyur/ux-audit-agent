@@ -41,5 +41,9 @@
       "tag": "Free"
     },
     "note": "Both open an email with the details filled in."
+  },
+  "contact": {
+    "text": "Working on a product and want a second opinion?",
+    "email": "andriy.dsgn@gmail.com"
   }
 }

@@ -1,0 +1,11 @@
+# Shareable report links for ux-audit-agent: r.ayurchenko.xyz/<id>
+# Free plan only: Workers + Workers KV. Secrets (optional): TG_TOKEN, TG_CHAT for upload notifications.
+name = "ux-audit-share"
+main = "src/worker.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+routes = [{ pattern = "r.ayurchenko.xyz", custom_domain = true }]
+
+[[kv_namespaces]]
+binding = "REPORTS"
+id = "3b69f223c6654618a135cf85655c635d"

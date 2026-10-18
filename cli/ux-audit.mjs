@@ -8,11 +8,13 @@
 //   measure contrast <selector> --as <name>               computed colour contrast into checks.json
 //   measure text <selector> --as <name>                   text content and box into checks.json
 //   render [--single]                                     validate and build the report
+//   share --consent [--email you@x]                      upload the single-file report for a 30-day link (asks first)
+//   unshare                                               delete the shared link
 //   stop                                                  close the browser
 //
 // Selectors use Playwright syntax: CSS, text=..., role=button[name="..."], [data-testid=...].
 import { spawn, execSync } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, readdir, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
@@ -28,6 +30,7 @@ const { chromium } = await import('playwright');
 
 const STATE = path.resolve('.ux-audit/session.json');
 const PORT = 9333;
+const SHARE = process.env.UX_AUDIT_SHARE_URL ?? 'https://r.ayurchenko.xyz';
 const CHROME = process.env.UX_AUDIT_CHROME ?? {
   darwin: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   win32: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -191,6 +194,33 @@ const commands = {
     if (has('single')) args.push('--single');
     const p = spawn(process.execPath, args, { stdio: 'inherit' });
     p.on('exit', code => process.exit(code));
+  },
+
+  // Opt-in hosted copy of the single-file report on r.ayurchenko.xyz (30 days). The skill asks the user first;
+  // --consent records that they agreed. The owner token stays in <out>/.share.json for unshare.
+  async share() {
+    if (!has('consent')) fail('Ask the user first: the report is stored on ayurchenko.xyz for 30 days and Andriy Yurchenko, who built this agent, can see shared reports. Run again with --consent once they agree.');
+    const state = await loadState();
+    const files = (await readdir(state.out)).filter(f => f.endsWith('-task-audit.html'));
+    if (!files.length) fail('No single-file report yet. Run: ux-audit render --single');
+    const meta = (await readJson(path.join(state.out, 'data/audit.json'), {})).meta ?? {};
+    const headers = { 'Content-Type': 'text/html; charset=utf-8', 'X-Product': encodeURIComponent(meta.product ?? ''), 'X-Product-Url': encodeURIComponent(meta.url ?? '') };
+    if (flag('email')) headers['X-Email'] = encodeURIComponent(flag('email'));
+    const res = await fetch(`${SHARE}/api/reports`, { method: 'POST', headers, body: await readFile(path.join(state.out, files[0])) });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) fail(body.error ?? `Upload failed (${res.status}).`);
+    await writeFile(path.join(state.out, '.share.json'), JSON.stringify(body, null, 2));
+    console.log(JSON.stringify({ ok: true, url: body.url, manageUrl: body.manageUrl, expires: body.expires }));
+  },
+
+  async unshare() {
+    const state = await loadState();
+    const file = path.join(state.out, '.share.json');
+    const shared = await readJson(file, null) ?? fail('Nothing was shared from this audit.');
+    const res = await fetch(`${SHARE}/api/reports/${shared.id}/delete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: shared.token }) });
+    if (!res.ok && res.status !== 404) fail(`Could not delete (${res.status}).`);
+    await unlink(file);
+    console.log(JSON.stringify({ ok: true, removed: shared.url }));
   },
 
   async stop() {

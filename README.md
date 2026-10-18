@@ -31,6 +31,10 @@ Requirements: Node 20 or newer and Google Chrome. On first run the agent install
 
 The agent asks for the product URL, the task, what counts as success, the moment of first value, and whether to start from a first visit or a signed-in state. The report is written to `audit/index.html` in your working folder; `ux-audit render --single` also writes one shareable file with every screenshot embedded.
 
+## Shareable link (optional)
+
+After a report is built, the agent can offer a link your team can open in a browser. Nothing is uploaded unless you say yes. The single-file report is stored on `r.ayurchenko.xyz` for 30 days, then deleted automatically; the author can see shared reports. The link opens the report in a sandbox, without tracking scripts. To remove it earlier, ask Claude to run `ux-audit unshare`, or open the manage link once and use Delete link on the report.
+
 ## What it will not do
 
 - Create accounts, type passwords or pass 2FA. If the task needs an account, it opens Chrome and you sign in yourself.
@@ -39,7 +43,7 @@ The agent asks for the product URL, the task, what counts as success, the moment
 
 ## Privacy
 
-Everything runs on your machine and your Claude account. Screenshots, data and the report stay in your folder. Nothing is sent to the author. The report links to the author's site; those links carry a `utm_source` tag and nothing else.
+Everything runs on your machine and your Claude account. Screenshots, data and the report stay in your folder. Nothing is sent to the author unless you choose to share a link (see above). The report links to the author's site; those links carry a `utm_source` tag and nothing else.
 
 ## How it is built
 
