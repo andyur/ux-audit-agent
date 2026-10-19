@@ -1,3 +1,5 @@
+/* Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz)
+   Licensed under PolyForm Shield 1.0.0 (LICENSE.md). Keep this notice in any copy or change. */
 /* Direction: one neo-grotesk with tight tracking, pure white sheet, blue-black ink, grey rounded panels,
    hairlines at 10% ink, black pill for the single action. Marks are the only saturated colour. */
 :root {
@@ -12,7 +14,6 @@
   --first: #1c7c4a;
 
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --mono: "Geist Mono", ui-monospace, Menlo, monospace;
 
   --fs-12: 0.75rem;
   --fs-13: 0.8125rem;
@@ -79,6 +80,24 @@ a { color: inherit; text-decoration-color: var(--ink-3); text-underline-offset: 
 .scope dt { font-size: var(--fs-14); line-height: 1.5; color: var(--ink-2); display: flex; align-items: center; gap: var(--s2); }
 .scope dt .ic { inline-size: 16px; block-size: 16px; }
 .scope dd { margin: 0; font-size: var(--fs-14); line-height: 1.5; }
+/* Multi-flow audit: the flows in the header, and a heading above each flow's journey. */
+.flows { list-style: none; margin: var(--s5) 0 0; padding: 0; display: grid; gap: var(--s3); }
+@media (min-width: 720px) { .flows { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } }
+.flows li { display: grid; gap: var(--s2); align-content: start; justify-items: start; padding: var(--s4); border-radius: var(--r-m); background: var(--panel); }
+.flows a { display: grid; gap: var(--s1); color: inherit; text-decoration: none; }
+.flows b { font-size: var(--fs-16); font-weight: 500; line-height: 1.35; }
+.flows p { margin: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-2); }
+.flows__n { font-size: var(--fs-13); color: var(--ink-3); }
+.flowtabs { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0 0 var(--s5); }
+.flowtabs button { flex: 0 1 auto; text-align: start; display: inline-flex; align-items: center; gap: var(--s2); padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--sheet); font: inherit; font-size: var(--fs-14); font-weight: 500; color: var(--ink-2); cursor: pointer; transition: background-color 0.15s, color 0.15s; }
+.flowtabs button:hover { color: var(--ink); background: var(--panel); }
+.flowtabs button[aria-selected="true"] { color: var(--sheet); background: var(--ink); border-color: var(--ink); }
+.flowtabs button[aria-selected="true"] .flows__n { color: rgb(255 255 255 / 0.6); }
+.flowtabs button[aria-selected="true"] .toc__n { color: rgb(255 255 255 / 0.7); background: rgb(255 255 255 / 0.14); }
+.flowscope { margin: 0 0 var(--s6); }
+.flowscope div:last-child { border-bottom: 0; }
+.flowscope .status { margin: 0 var(--s2) 0 0; }
+@media print { .flowtabs { display: none; } .flowpanel[hidden] { display: block; } }
 .status { display: inline-flex; align-items: center; gap: var(--s2); font-weight: 500; margin-bottom: var(--s1); }
 .status::before { content: ""; inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--first); }
 .status--partial::before { background: #c27c0e; }
@@ -91,6 +110,11 @@ html { scroll-padding-top: 80px; }
 .toc__bar::-webkit-scrollbar { display: none; }
 .toc a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-size: var(--fs-13); font-weight: 500; color: var(--ink-2); text-decoration: none; white-space: nowrap; transition: background-color 0.15s, color 0.15s; }
 .toc a:hover { color: var(--ink); background: var(--panel); }
+.toc__sub { display: none; gap: 2px; align-items: center; padding: 0 4px 0 2px; }
+.toc a[aria-current] + .toc__sub { display: inline-flex; }
+.toc__sub button { padding: 5px 10px; border: 0; border-radius: 999px; background: none; font: inherit; font-size: var(--fs-12); font-weight: 500; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
+.toc__sub button:hover { color: var(--ink); background: var(--panel); }
+.toc__sub button[aria-selected="true"] { color: var(--ink); background: var(--panel); }
 .toc a[aria-current] { background: var(--ink); color: #fff; }
 .toc__n { display: inline-grid; place-items: center; min-inline-size: 18px; block-size: 18px; padding: 0 5px; border-radius: 5px; background: var(--panel); color: var(--ink-2); font-size: 11px; font-variant-numeric: tabular-nums; }
 .toc a[aria-current] .toc__n { background: rgb(255 255 255 / 0.18); color: #fff; }
@@ -129,7 +153,7 @@ html { scroll-padding-top: 80px; }
 .journey { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .journey li { display: grid; grid-template-columns: 28px 1fr; gap: var(--s4); padding: var(--s5) 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
 @media (min-width: 860px) { .journey li { grid-template-columns: 32px 440px 1fr; gap: var(--s6); align-items: start; } }
-.journey .n { font-family: var(--mono); font-size: var(--fs-13); color: var(--ink-3); padding-top: 3px; }
+.journey .n { font-size: var(--fs-13); font-variant-numeric: tabular-nums; color: var(--ink-3); padding-top: 3px; }
 .journey .thumb, .journey .body { grid-column: 2; }
 @media (min-width: 860px) { .journey .thumb, .journey .body { grid-column: auto; } }
 .journey .thumb img { display: block; width: 100%; border-radius: var(--r-m); border: 1px solid var(--line); }
@@ -229,8 +253,7 @@ html { scroll-padding-top: 80px; }
 @media (prefers-reduced-motion: reduce) { .copy { transition: none; } }
 
 /* Call to action: two email steps in a hairline frame. Free darkens on hover; Paid has a holographic tag at rest
-   and a moving inner light on hover (one angle, --cta-a, drives both). */
-@property --cta-a { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+   and a moving inner light on hover. Both move with rotate and scale only, so the GPU animates them without repaints. */
 .cta__frame { display: grid; justify-items: center; text-align: center; gap: var(--s4); padding: 56px var(--s4); border-radius: var(--r-l); box-shadow: 0 0 0 1px var(--line); }
 @media (min-width: 720px) { .cta__frame { padding: 64px 40px; } }
 .cta h2 { font-size: clamp(2rem, 4.4vw, 3.25rem); letter-spacing: -0.04em; font-weight: 450; text-wrap: balance; }
@@ -251,26 +274,28 @@ html { scroll-padding-top: 80px; }
 .cta__note a { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-2); text-underline-offset: 3px; }
 .cta__note a:hover { color: var(--ink); }
 .cta__card--free:hover { background: #f5f5f3; }
-/* Paid: moving inner light on hover */
-.cta__card--paid { animation: cta-spin 6s linear infinite; }
-.cta__card--paid::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s;
-  box-shadow: inset 0 0 12px 0 rgb(255 110 50 / 0.6), inset 0 0 34px 2px rgb(255 70 160 / 0.38), inset 0 0 70px 8px rgb(110 120 255 / 0.3), inset 0 0 110px 14px rgb(80 210 255 / 0.2);
-  -webkit-mask: conic-gradient(from var(--cta-a), transparent 0 50%, rgb(0 0 0 / 0.3) 72%, #000 90%, rgb(0 0 0 / 0.6) 96.6%, transparent 100%);
-  mask: conic-gradient(from var(--cta-a), transparent 0 50%, rgb(0 0 0 / 0.3) 72%, #000 90%, rgb(0 0 0 / 0.6) 96.6%, transparent 100%);
-  animation: cta-hue 7s ease-in-out infinite; }
-.cta__card--paid:hover::after { opacity: 1; }
+/* Paid: on hover, an inner light runs around the edge. The light is a still ring of inner glows; a white veil with
+   one open sector turns over it (8s) and sways ±10° (3.3s): its speed changes by about a quarter and never stalls. */
+.cta__card--paid { overflow: hidden; }
+.cta__card--paid::before, .cta__card--paid::after { content: ""; position: absolute; pointer-events: none; }
+/* Neighbouring hues only: opposite ones (orange over blue) mix to grey where the layers overlap */
+.cta__card--paid::before { inset: 0; z-index: -2; border-radius: inherit; opacity: 0; transition: opacity .4s;
+  box-shadow: inset 0 0 14px 0 rgb(255 92 170 / 0.42), inset 0 0 40px 4px rgb(160 110 255 / 0.26), inset 0 0 90px 10px rgb(90 185 255 / 0.16); }
+.cta__card--paid::after { z-index: -1; inset: 50% auto auto 50%; inline-size: 150%; aspect-ratio: 1; translate: -50% -50%;
+  background: conic-gradient(#fff 0 50%, rgb(255 255 255 / 0.7) 72%, rgb(255 255 255 / 0) 90%, rgb(255 255 255 / 0.4) 96.6%, #fff 100%);
+  animation: cta-turn 8s linear infinite, cta-sway 3.3s ease-in-out infinite alternate; }
+.cta__card--paid:hover::before { opacity: 1; }
 /* Paid tag at rest: soft colours turning around the edge, white centre; plain grey while the card is hovered */
-.cta__tag--magic { color: var(--ink); transition: color .35s; animation: cta-spin 3.2s linear infinite; }
-.cta__tag--magic::before, .cta__tag--magic::after { content: ""; position: absolute; z-index: -1; border-radius: inherit; transition: opacity .35s; }
-.cta__tag--magic::before { inset: -4px; background: conic-gradient(from var(--cta-a), #ffc4a8, #ffbddd, #d0c6ff, #bce8ff, #c4f3d8, #ffe6a3, #ffc4a8); filter: blur(2px); animation: cta-hue 4s ease-in-out infinite; }
-.cta__tag--magic::after { inset: 4px 9px; background: #fff; filter: blur(3px); }
+.cta__tag--magic { color: var(--ink); transition: color .35s; }
+.cta__tag--magic::before, .cta__tag--magic::after { content: ""; position: absolute; z-index: -1; transition: opacity .35s; }
+.cta__tag--magic::before { inset: 50% auto auto 50%; inline-size: 120px; aspect-ratio: 1; translate: -50% -50%; background: conic-gradient(#ffc4a8, #ffbddd, #d0c6ff, #bce8ff, #c4f3d8, #ffe6a3, #ffc4a8); filter: blur(2px); animation: cta-turn 3.2s linear infinite, cta-hue 4s ease-in-out infinite; }
+.cta__tag--magic::after { inset: 4px 9px; border-radius: inherit; background: #fff; filter: blur(3px); }
 .cta__card--paid:hover .cta__tag--magic { color: var(--ink-2); }
 .cta__card--paid:hover .cta__tag--magic::before, .cta__card--paid:hover .cta__tag--magic::after { opacity: 0; }
-@keyframes cta-spin { to { --cta-a: 360deg; } }
+@keyframes cta-turn { to { rotate: 360deg; } }
+@keyframes cta-sway { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
 @keyframes cta-hue { 0%, 100% { filter: blur(2px) hue-rotate(0deg); } 50% { filter: blur(2px) hue-rotate(60deg); } }
-.cta__card--paid::after { animation-name: cta-hue-sharp; }
-@keyframes cta-hue-sharp { 0%, 100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(45deg); } }
-@media (prefers-reduced-motion: reduce) { .cta__card, .cta__card--paid, .cta__card--paid::after, .cta__tag--magic, .cta__tag--magic::before { animation: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .cta__card, .cta__card--paid::before, .cta__card--paid::after, .cta__tag--magic, .cta__tag--magic::before { animation: none; transition: none; } }
 
 /* Limits and the optional note */
 .limits { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr; gap: 2px; }

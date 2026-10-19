@@ -1,6 +1,10 @@
-# ux-audit-agent
+# ux-audit-agent: UX audit agent for Claude Code
 
-A task audit of a live web product, run from Claude Code. You name one task ("sign up and create a first project"); the agent walks it in your own Chrome, captures every meaningful screen with element positions measured from the DOM, and writes an HTML report a founder can act on.
+A UX audit agent for Claude Code. You name one task in your live web product ("sign up and create a first project"), or let it propose two or three core flows; the agent walks them in a tab of your own browser, captures every meaningful screen with element positions measured from the DOM, and writes an evidence-backed HTML report a founder can act on. Use it for an onboarding audit, a usability review of one flow, or a first-run check before launch. It runs as a Claude Code plugin and drives the browser with Playwright.
+
+[![Finding 1 from the Linear example: a new issue has no assignee by default, so it is missing from My issues, which opens on Assigned](docs/images/report-finding.png)](examples/report/)
+
+**Example: Linear.** Task: create a first issue, then find it again. The agent found that a new issue has no assignee by default, while My issues opens on the Assigned tab, so the issue you just made is not there and the empty state blames display options. The full report is in [`examples/report/`](examples/report/); open `index.html` locally.
 
 The report has:
 
@@ -9,8 +13,6 @@ The report has:
 - **Findings:** zoomed evidence with marks placed from the DOM, then observed, why it matters, hypothesis, recommendation and evidence.
 - **Priorities:** Now, Next and Test first, each a task you can copy into Linear, Jira or GitHub.
 - **Limits:** what this audit cannot see.
-
-An example report for Excalidraw is in [`examples/report/`](examples/report/). Open `index.html` locally.
 
 ## Install
 
@@ -21,13 +23,13 @@ In Claude Code:
 /plugin install ux-audit-agent@andyur
 ```
 
-Requirements: Node 20 or newer and Chrome, Edge or Brave. On first run the agent installs its one dependency, Playwright, which drives your browser; no separate browser is downloaded. Tested on macOS with Chrome.
+Requirements: Node 20 or newer and a Chromium browser from 2026 (Chrome or Edge 144 or newer, Brave, Arc, Dia, Vivaldi, Opera). On first run the agent installs its one dependency, Playwright, which drives your browser; no separate browser is downloaded. Tested on macOS with Chrome and Brave.
 
 ## Which browser it uses
 
-- **Your own browser, signed in (default).** The agent opens a new window in your Chrome, Edge or Brave, in the profile you used last, so the product is already signed in. Your browser asks once per audit to allow the connection, and shows a bar saying it is controlled by automated software while the audit runs. The agent works only in the window it opened and closes it at the end. This needs remote debugging switched on once at `chrome://inspect/#remote-debugging` (version 144 or newer); the agent tells you if it is off.
-- **A separate window.** If you would rather not connect your browser, or you use Safari or Firefox, the agent opens a separate Chrome, Edge or Brave profile where you sign in to the product once. With none of those installed, it can download Chromium (about 150 MB) if you agree.
-- **First visit.** For signup and onboarding audits it uses a throwaway profile with no saved data.
+- **Your own browser (default, for every audit).** The agent finds the Chromium browser you have open (your default browser first) and opens one new tab in the window you already have open, in the profile you used last, so your sign-ins are already there, also for signup and onboarding audits. Your browser asks once per audit to allow the connection, and shows a bar saying it is controlled by automated software while the audit runs. The agent works only in the tab it opened and closes it at the end. This needs remote debugging switched on once. If it is off, the agent opens the switch page (`chrome://inspect/#remote-debugging`) in your browser and waits while you tick it; on a Mac the system first asks once whether Claude may control the browser. On Windows and Linux the address is copied for you to paste. Comet does not have the switch yet (Chromium 142); Safari and Firefox cannot be connected at all. Arc, Dia, Vivaldi and Opera are detected but not tested yet.
+- **A separate window, if you ask.** If you would rather not connect your browser, or you use Safari or Firefox, the agent opens a separate Chrome, Edge or Brave profile where you sign in to the product once. With none of those installed, it can download Chromium (about 150 MB) if you agree.
+- **A clean profile, if you ask.** A throwaway window with no saved data, for when saved sessions would change what a new user sees.
 
 ## Use
 
@@ -35,7 +37,7 @@ Requirements: Node 20 or newer and Chrome, Edge or Brave. On first run the agent
 /audit
 ```
 
-The agent asks for the product URL, the task, what counts as success, the moment of first value, and whether to start from a first visit or a signed-in state. The report is written to `audit/index.html` in your working folder; `ux-audit render --single` also writes one shareable file with every screenshot embedded.
+The agent asks for the product URL and how deep to go (Quick, Standard or Deep, see the FAQ), then for the task or the flows, what counts as success, and the moment of first value. The report is written to `audit/index.html` in your working folder; `ux-audit render --single` also writes one shareable file with every screenshot embedded.
 
 ## Shareable link (optional)
 
@@ -56,11 +58,35 @@ Everything runs on your machine and your Claude account. Screenshots, data and t
 
 - `skills/audit/SKILL.md`: the audit protocol the agent follows.
 - `cli/ux-audit.mjs`: browser steps (start, act, capture, measure, render, stop).
-- `render/`: the validator and the report renderer. Fonts: Inter and Geist Mono, SIL OFL 1.1.
+- `render/`: the validator and the report renderer. Font: Inter, SIL OFL 1.1.
 - `docs/`: protocol, report design and implementation notes.
+
+## FAQ
+
+### How do I run a UX audit with Claude Code?
+
+Install the plugin (see Install), open Claude Code in any folder and type `/audit`. Give the product URL and one task. The agent asks what counts as success, walks the task in your browser, and writes `audit/index.html`.
+
+### Can it audit a product that needs a login?
+
+Yes. It works in a tab of the browser you already use, so you are already signed in. If the product shows a sign-in or signup screen, you sign in yourself in that tab; the agent never types passwords or creates accounts.
+
+### Which browsers does it work with?
+
+Chromium browsers: Chrome and Edge 144 or newer, Brave, and Arc, Dia, Vivaldi and Opera (detected, not tested yet). Comet does not have the remote debugging switch yet. Safari and Firefox cannot be connected; with them the agent offers a separate Chrome window.
+
+### Does it audit the whole product?
+
+No, but it can cover more than one task. Before it starts, the agent asks how deep to go. **Quick** walks one task you name. **Standard**, the default, looks at your product and proposes two or three core flows (first value, the path to paying, a return visit) for you to confirm. **Deep** adds each flow's edges: empty states, input errors, recovery, settings defaults and a phone-width check. Every flow is walked end to end, so each finding has a screenshot and a measurement behind it, and the report shows all flows on one page with shared priorities and the problems they have in common.
+
+### What leaves my machine?
+
+Nothing, unless you ask for a shareable link. Screenshots, data and the report stay in your folder, and the model runs on your own Claude account.
 
 ## License
 
 [PolyForm Shield 1.0.0](LICENSE.md). You may use and change it, including at work and on your company's products. You may not use it to build a product or service that competes with the author's, such as a rebranded audit tool or audit service.
 
 Made by [Andriy Yurchenko](https://ayurchenko.xyz), product designer.
+
+Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz). Under the license, this line and `LICENSE.md` stay with every copy, changed or not.

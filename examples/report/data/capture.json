@@ -1,24 +1,21 @@
 {
-  "product": "Excalidraw",
-  "url": "https://excalidraw.com",
-  "capturedAt": "2026-10-14T18:31:07.124Z",
-  "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+  "product": "linear.app",
+  "url": "https://linear.app",
+  "capturedAt": "2026-10-19T18:47:25.156Z",
+  "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
   "viewport": {
     "width": 1440,
     "height": 900
   },
   "dpr": 2,
-  "download": null,
-  "interactions": 16,
-  "totalMs": 17921,
   "steps": [
     {
       "id": "s1",
-      "title": "Empty canvas, first visit",
-      "action": "Open excalidraw.com in a fresh browser profile",
-      "response": "Welcome screen with hand-drawn hints, a storage warning and a menu of Open, Help, Live collaboration, Sign up",
+      "title": "Home page",
+      "action": "Open linear.app",
+      "response": "Marketing page with Log in and Sign up in the top bar",
       "screenshot": {
-        "file": "assets/s1.png",
+        "file": "assets/s1.jpg",
         "cssWidth": 1440,
         "cssHeight": 900,
         "dpr": 2,
@@ -29,113 +26,108 @@
       },
       "targets": [
         {
-          "id": "storage",
-          "label": "Storage warning",
+          "id": "signup",
+          "label": "Sign up link",
+          "selector": "role=banner >> role=link[name=\"Sign up\"]",
           "box": {
-            "x": 492.40625,
-            "y": 349.609375,
-            "width": 455.171875,
-            "height": 64.78125
+            "x": 1288.0859375,
+            "y": 20,
+            "width": 72.9140625,
+            "height": 32
           },
           "source": "dom"
         },
         {
-          "id": "menu",
-          "label": "Main menu button",
+          "id": "h1",
+          "label": "Headline",
+          "selector": "role=heading[level=1]",
           "box": {
-            "x": 16,
-            "y": 16,
-            "width": 36,
-            "height": 36
+            "x": 78,
+            "y": 272,
+            "width": 1282,
+            "height": 128
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 32558,
+      "interactionsSoFar": 0
+    },
+    {
+      "id": "s2",
+      "title": "Sign up",
+      "action": "Click Sign up",
+      "response": "Create your workspace: Google, email or SAML SSO",
+      "screenshot": {
+        "file": "assets/s2.jpg",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "h1",
+          "label": "Create your workspace heading",
+          "selector": "role=heading[level=1]",
+          "box": {
+            "x": 576,
+            "y": 338,
+            "width": 288,
+            "height": 22
           },
           "source": "dom"
         },
         {
-          "id": "menuHint",
-          "label": "Hint pointing at the menu",
+          "id": "email",
+          "label": "Continue with email",
+          "selector": "role=button[name=\"Continue with email\"]",
           "box": {
-            "x": 74.59375,
-            "y": 130,
-            "width": 262.453125,
-            "height": 20
-          },
-          "source": "dom"
-        },
-        {
-          "id": "toolbar",
-          "label": "Tool bar",
-          "box": {
-            "x": 449,
-            "y": 16,
-            "width": 542,
+            "x": 576,
+            "y": 444,
+            "width": 288,
             "height": 44
           },
           "source": "dom"
         },
         {
-          "id": "share",
-          "label": "Share button",
+          "id": "google",
+          "label": "Continue with Google",
+          "selector": "role=button[name=\"Continue with Google\"]",
           "box": {
-            "x": 1322.09375,
-            "y": 16,
-            "width": 53.90625,
-            "height": 36
+            "x": 576,
+            "y": 384,
+            "width": 288,
+            "height": 44
           },
           "source": "dom"
         },
         {
-          "id": "plus",
-          "label": "Excalidraw+ trial button",
+          "id": "terms",
+          "label": "Terms line",
+          "selector": "text=/By signing up/",
           "box": {
-            "x": 1206.203125,
-            "y": 19.046875,
-            "width": 92.890625,
-            "height": 16.09375
+            "x": 576,
+            "y": 584,
+            "width": 288,
+            "height": 58.5
           },
           "source": "dom"
         }
       ],
-      "elapsedMs": 1919,
-      "interactionsSoFar": 0
-    },
-    {
-      "id": "s2",
-      "title": "First box with a label",
-      "action": "Pick the rectangle tool, drag a box, double-click it and type \"Request\"",
-      "response": "Box appears with centred text; the welcome screen disappears; a style panel opens on the left while the box is selected",
-      "screenshot": {
-        "file": "assets/s2.png",
-        "cssWidth": 1440,
-        "cssHeight": 900,
-        "dpr": 2,
-        "scroll": {
-          "x": 0,
-          "y": 0
-        }
-      },
-      "targets": [
-        {
-          "id": "toolbarRect",
-          "label": "Rectangle tool",
-          "box": {
-            "x": 582,
-            "y": 20,
-            "width": 36,
-            "height": 36
-          },
-          "source": "dom"
-        }
-      ],
-      "elapsedMs": 3427,
-      "interactionsSoFar": 5
+      "elapsedMs": 46742,
+      "interactionsSoFar": 1
     },
     {
       "id": "s3",
-      "title": "Two boxes connected by an arrow",
-      "action": "Draw a second box labelled \"Review\", pick the arrow tool and drag from the first box to the second",
-      "response": "Arrow snaps to both boxes; diagram complete on canvas",
+      "title": "First screen in the new workspace",
+      "action": "Sign up and create the workspace Myapptesting (done by the user, not captured)",
+      "response": "Lands on Linear Agent chat with a notice that the agent is now the default view",
       "screenshot": {
-        "file": "assets/s3.png",
+        "file": "assets/s3.jpg",
         "cssWidth": 1440,
         "cssHeight": 900,
         "dpr": 2,
@@ -146,27 +138,100 @@
       },
       "targets": [
         {
-          "id": "arrowTool",
-          "label": "Arrow tool",
+          "id": "notice",
+          "label": "Default view notice",
+          "selector": "text=\"Linear Agent is now your default view\"",
           "box": {
-            "x": 702,
-            "y": 20,
-            "width": 36,
-            "height": 36
+            "x": 672.40234375,
+            "y": 81.25,
+            "width": 215.359375,
+            "height": 14.5
+          },
+          "source": "dom"
+        },
+        {
+          "id": "keep",
+          "label": "Keep button",
+          "selector": "role=main >> role=button[name=\"Keep\"]",
+          "box": {
+            "x": 969.30078125,
+            "y": 76.5,
+            "width": 46.296875,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "change",
+          "label": "Change button",
+          "selector": "role=main >> role=button[name=\"Change\"]",
+          "box": {
+            "x": 903.76171875,
+            "y": 76.5,
+            "width": 61.5390625,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "newissue",
+          "label": "Create new issue button",
+          "selector": "role=button[name=\"Create new issue\"]",
+          "box": {
+            "x": 208,
+            "y": 16,
+            "width": 28,
+            "height": 28
+          },
+          "source": "dom"
+        },
+        {
+          "id": "chat",
+          "label": "Agent message box",
+          "selector": "role=textbox[name=\"Send a message to Linear AI\"]",
+          "box": {
+            "x": 502,
+            "y": 420,
+            "width": 676,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "myissues",
+          "label": "My issues link",
+          "selector": "role=link[name=\"My issues\"]",
+          "box": {
+            "x": 12,
+            "y": 89.5,
+            "width": 224,
+            "height": 28
+          },
+          "source": "dom"
+        },
+        {
+          "id": "try",
+          "label": "Try checklist",
+          "selector": "role=navigation >> role=button[name=\"Try\"]",
+          "box": {
+            "x": 17,
+            "y": 489.59375,
+            "width": 219,
+            "height": 28
           },
           "source": "dom"
         }
       ],
-      "elapsedMs": 4590,
-      "interactionsSoFar": 13
+      "elapsedMs": 899914,
+      "interactionsSoFar": 1
     },
     {
       "id": "s4",
-      "title": "Main menu open",
-      "action": "Open the main menu (top-left)",
-      "response": "Dropdown with file, export, collaboration, preference and social items",
+      "title": "Create issue dialog",
+      "action": "Click the Create new issue icon, type a title",
+      "response": "Dialog with title, description and properties; Backlog status, no priority, no assignee",
       "screenshot": {
-        "file": "assets/s4.png",
+        "file": "assets/s4.jpg",
         "cssWidth": 1440,
         "cssHeight": 900,
         "dpr": 2,
@@ -177,49 +242,76 @@
       },
       "targets": [
         {
-          "id": "exportItem",
-          "label": "Export image item",
+          "id": "title",
+          "label": "Issue title field",
+          "selector": "role=dialog >> role=textbox[name=\"Issue title\"]",
           "box": {
-            "x": 24,
-            "y": 134,
-            "width": 213.6875,
-            "height": 32
+            "x": 363.5,
+            "y": 174.5,
+            "width": 713,
+            "height": 24
           },
           "source": "dom"
         },
         {
-          "id": "saveItem",
-          "label": "Save to item",
+          "id": "assignee",
+          "label": "Assignee button",
+          "selector": "role=dialog >> role=button[name^=\"Change assignee\"]",
           "box": {
-            "x": 24,
-            "y": 101,
-            "width": 213.6875,
-            "height": 32
+            "x": 522.5390625,
+            "y": 286.5,
+            "width": 85.7265625,
+            "height": 24
           },
           "source": "dom"
         },
         {
-          "id": "menuPanel",
-          "label": "Menu panel",
+          "id": "status",
+          "label": "Status: Backlog",
+          "selector": "role=dialog >> role=button[name=\"Change status\"]",
           "box": {
-            "x": 16,
-            "y": 60,
-            "width": 229.6875,
-            "height": 648
+            "x": 357.5,
+            "y": 286.5,
+            "width": 78.765625,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "create",
+          "label": "Create issue button",
+          "selector": "role=dialog >> role=button[name=\"Create issue\"]",
+          "box": {
+            "x": 989.875,
+            "y": 334.5,
+            "width": 92.625,
+            "height": 28
+          },
+          "source": "dom"
+        },
+        {
+          "id": "team",
+          "label": "Team MYA",
+          "selector": "role=dialog >> role=button[name=\"Set team\"]",
+          "box": {
+            "x": 357.5,
+            "y": 129.5,
+            "width": 58.6484375,
+            "height": 24
           },
           "source": "dom"
         }
       ],
-      "elapsedMs": 5218,
-      "interactionsSoFar": 14
+      "elapsedMs": 936336,
+      "interactionsSoFar": 4
     },
     {
       "id": "s5",
-      "title": "Export image dialog",
-      "action": "Choose \"Export image...\"",
-      "response": "Modal with a live preview, background, dark mode, embed scene and scale options, and PNG, SVG and Copy buttons",
+      "title": "Issue created",
+      "action": "Click Create issue",
+      "response": "Toast: Issue created, MYA-5; the page stays on the Agent chat",
       "screenshot": {
-        "file": "assets/s5.png",
+        "file": "assets/s5.jpg",
         "cssWidth": 1440,
         "cssHeight": 900,
         "dpr": 2,
@@ -230,77 +322,52 @@
       },
       "targets": [
         {
-          "id": "dialog",
-          "label": "Export dialog",
+          "id": "toast",
+          "label": "Issue created toast",
+          "selector": "role=region[name=\"Notifications alt+T\"] >> role=status",
           "box": {
-            "x": 249,
-            "y": 270,
-            "width": 942,
-            "height": 360
+            "x": 1032.5,
+            "y": 750.5,
+            "width": 383,
+            "height": 96.546875
           },
           "source": "dom"
         },
         {
-          "id": "embed",
-          "label": "Embed scene option",
+          "id": "link",
+          "label": "MYA-5 link in the toast",
+          "selector": "role=link[name^=\"MYA-5\"]",
           "box": {
-            "x": 850.703125,
-            "y": 399.3125,
-            "width": 119.78125,
-            "height": 24
+            "x": 1064.5,
+            "y": 783.25,
+            "width": 301.2890625,
+            "height": 23
           },
           "source": "dom"
         },
         {
-          "id": "scale",
-          "label": "Scale option",
+          "id": "myissues",
+          "label": "My issues link",
+          "selector": "role=link[name=\"My issues\"]",
           "box": {
-            "x": 850.703125,
-            "y": 445.3125,
-            "width": 36.265625,
-            "height": 24
+            "x": 12,
+            "y": 89.5,
+            "width": 224,
+            "height": 28
           },
           "source": "dom"
-        },
-        {
-          "id": "pngBtn",
-          "label": "PNG button",
-          "box": {
-            "x": 850.703125,
-            "y": 590,
-            "width": 84.203125,
-            "height": 40
-          },
-          "source": "dom"
-        },
-        {
-          "id": "copyBtn",
-          "label": "Copy to clipboard button",
-          "box": {
-            "x": 1039.078125,
-            "y": 590,
-            "width": 151.921875,
-            "height": 40
-          },
-          "source": "dom"
-        },
-        {
-          "id": "filename",
-          "label": "File name field",
-          "box": null,
-          "source": "missing"
         }
       ],
-      "elapsedMs": 6782,
-      "interactionsSoFar": 15
+      "elapsedMs": 955288,
+      "interactionsSoFar": 5
     },
     {
       "id": "s6",
-      "title": "After pressing PNG",
-      "action": "Press the PNG button",
-      "response": "No download observed",
+      "title": "My issues: Assigned",
+      "action": "Click My issues",
+      "response": "Assigned tab: No matching issues, 2 issues hidden by display options; MYA-5 is not listed",
       "screenshot": {
-        "file": "assets/s6.png",
+        "file": "assets/s6.jpg",
         "cssWidth": 1440,
         "cssHeight": 900,
         "dpr": 2,
@@ -311,19 +378,226 @@
       },
       "targets": [
         {
-          "id": "dialog2",
-          "label": "Export dialog after download",
+          "id": "empty",
+          "label": "No matching issues",
+          "selector": "text=\"No matching issues\"",
           "box": {
-            "x": 249,
-            "y": 270,
-            "width": 942,
-            "height": 360
+            "x": 769.03125,
+            "y": 484.75,
+            "width": 141.9375,
+            "height": 23
+          },
+          "source": "dom"
+        },
+        {
+          "id": "hidden",
+          "label": "2 issues hidden by display options",
+          "selector": "text=/issues hidden by display options/",
+          "box": {
+            "x": 681.5,
+            "y": 546,
+            "width": 203.046875,
+            "height": 20.5
+          },
+          "source": "dom"
+        },
+        {
+          "id": "show",
+          "label": "Show options button",
+          "selector": "role=main >> role=button[name=\"Show options\"]",
+          "box": {
+            "x": 903.625,
+            "y": 544.25,
+            "width": 94.875,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "assignedTab",
+          "label": "Assigned tab",
+          "selector": "role=main >> role=link[name=\"Assigned\"]",
+          "box": {
+            "x": 256.5,
+            "y": 60.25,
+            "width": 74.53125,
+            "height": 28
+          },
+          "source": "dom"
+        },
+        {
+          "id": "createdTab",
+          "label": "Created tab",
+          "selector": "role=main >> role=link[name=\"Created\"]",
+          "box": {
+            "x": 339.03125,
+            "y": 60.25,
+            "width": 66.625,
+            "height": 28
           },
           "source": "dom"
         }
       ],
-      "elapsedMs": 17919,
-      "interactionsSoFar": 16
+      "elapsedMs": 972135,
+      "interactionsSoFar": 6
+    },
+    {
+      "id": "s7",
+      "title": "Display options",
+      "action": "Click Show options",
+      "response": "Display options panel: grouping Focus, completed issues Past day, sub-issues shown; nothing names which option hides the 2 issues",
+      "screenshot": {
+        "file": "assets/s7.jpg",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "completed",
+          "label": "Completed issues: Past day",
+          "selector": "role=combobox[name=\"Completed issues\"]",
+          "box": {
+            "x": 1257,
+            "y": 303.5,
+            "width": 116,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "grouping",
+          "label": "Grouping: Focus",
+          "selector": "role=combobox[name=\"Grouping\"]",
+          "box": {
+            "x": 1257,
+            "y": 159,
+            "width": 116,
+            "height": 24
+          },
+          "source": "dom"
+        },
+        {
+          "id": "hidden",
+          "label": "2 issues hidden by display options",
+          "selector": "text=/issues hidden by display options/",
+          "box": {
+            "x": 681.5,
+            "y": 546,
+            "width": 203.046875,
+            "height": 20.5
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 1005409,
+      "interactionsSoFar": 7
+    },
+    {
+      "id": "s8",
+      "title": "My issues: Created",
+      "action": "Click the Created tab",
+      "response": "MYA-5 Add CSV export to the reports page, Backlog, no priority",
+      "screenshot": {
+        "file": "assets/s8.jpg",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "row",
+          "label": "MYA-5 row",
+          "selector": "role=main >> role=link[name^=\"Select issue\"]",
+          "box": {
+            "x": 248.5,
+            "y": 96,
+            "width": 1183,
+            "height": 44
+          },
+          "source": "dom"
+        },
+        {
+          "id": "createdTab",
+          "label": "Created tab",
+          "selector": "role=main >> role=link[name=\"Created\"]",
+          "box": {
+            "x": 339.03125,
+            "y": 60.25,
+            "width": 66.625,
+            "height": 28
+          },
+          "source": "dom"
+        },
+        {
+          "id": "assignedTab",
+          "label": "Assigned tab",
+          "selector": "role=main >> role=link[name=\"Assigned\"]",
+          "box": {
+            "x": 256.5,
+            "y": 60.25,
+            "width": 74.53125,
+            "height": 28
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 1019053,
+      "interactionsSoFar": 9
+    },
+    {
+      "id": "s9",
+      "title": "Inbox",
+      "action": "Click Inbox",
+      "response": "2 unread notifications: onboarding issues MYA-4 and MYA-2, Canceled, Closed by Linear 5 and 6 months ago; nothing about MYA-5",
+      "screenshot": {
+        "file": "assets/s9.jpg",
+        "cssWidth": 1440,
+        "cssHeight": 900,
+        "dpr": 2,
+        "scroll": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targets": [
+        {
+          "id": "n1",
+          "label": "MYA-4 notification",
+          "selector": "role=main >> role=link[name^=\"Unread MYA-4\"]",
+          "box": {
+            "x": 248.5,
+            "y": 60.5,
+            "width": 399.5,
+            "height": 55
+          },
+          "source": "dom"
+        },
+        {
+          "id": "n2",
+          "label": "MYA-2 notification",
+          "selector": "role=main >> role=link[name^=\"Unread MYA-2\"]",
+          "box": {
+            "x": 248.5,
+            "y": 115.5,
+            "width": 399.5,
+            "height": 55
+          },
+          "source": "dom"
+        }
+      ],
+      "elapsedMs": 1033731,
+      "interactionsSoFar": 10
     }
-  ]
+  ],
+  "interactions": 10,
+  "totalMs": 1033731
 }

@@ -18,7 +18,7 @@ The report is the product. It has to read like a careful consultancy deliverable
 
 Direction from Sana (sanalabs.com, sana.ai), checked against their computed styles on 14.10.2026.
 
-- **Type.** Inter for everything, embedded as a variable WOFF2 (OFL). Geist Mono only for step and finding IDs. Headings weight 450 with tight tracking (-0.03em at section size).
+- **Type.** Inter for everything, embedded as a variable WOFF2 (OFL). No monospace anywhere; step numbers use tabular figures. Headings weight 450 with tight tracking (-0.03em at section size).
 - **Scale.** 12 / 13 / 14 / 16 / 20 px, display sizes with `clamp()`. Spacing on a 4 px base (4 to 96).
 - **Colour.** White sheet, blue-black ink rgb(10 18 23) with 62% and 42% tints, hairlines at 10%. Grey panels #f3f3f1. One signal colour (#ff5a1f) reserved for annotations. Green only for "first value" and the completed status.
 - **Structure.** Rounded grey panels (16 to 24 px radius) hold the facts, the four summary blocks and each finding; white inner panels hold the finding text. Pills for severity, step references and the single action (black). No uppercase labels, no section numbers, no shadows.

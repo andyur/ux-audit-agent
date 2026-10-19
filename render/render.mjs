@@ -1,28 +1,67 @@
+// Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz)
+// Licensed under PolyForm Shield 1.0.0 (LICENSE.md). Keep this notice in any copy or change.
 // Renders examples/report/index.html (and audit.pdf with --pdf) from structured data:
 //   data/capture.json  steps, screenshots and DOM geometry from the browser run
 //   data/checks.json   supplementary measurements
 //   data/audit.json    findings, summary, recommendations, limits
+// A multi-flow audit has data/overview.json (flows, shared summary, patterns, priorities, limits) and one
+// folder per flow, flows/<id>/ with its own data/ and assets/. Its ids are prefixed with the flow id
+// ("signup-F1", "signup-s3") and the flows are rendered into one page.
 // Geometry is CSS px of the captured viewport; it is converted to percent of the screenshot, so markers stay
 // on the element at any display size. Screenshots are never painted on.
 import { readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { validate } from './validate.mjs';
 
 const dir = new URL(process.argv.find(a => a.startsWith('--dir='))?.slice(6) ?? '../examples/report/', import.meta.url).pathname;
-const read = async f => JSON.parse(await readFile(`${dir}data/${f}`, 'utf8'));
+const read = async (f, base = dir) => JSON.parse(await readFile(`${base}data/${f}`, 'utf8'));
 const font = async f => (await readFile(new URL(`./fonts/${f}`, import.meta.url))).toString('base64');
-const [capture, checks, audit, cssBody, sans, mono] = await Promise.all([
-  read('capture.json'), read('checks.json'), read('audit.json'),
+const multi = existsSync(`${dir}data/overview.json`);
+
+// One flow's data, loaded as written by the agent.
+const loadFlow = async (base, fallbackChecks) => {
+  const [capture, checks, audit] = await Promise.all([read('capture.json', base), existsSync(`${base}data/checks.json`) ? read('checks.json', base) : fallbackChecks, read('audit.json', base)]);
+  return { capture, checks, audit };
+};
+// Several flows become one audit: every step, finding and check path gets its flow id as a prefix.
+async function loadMulti() {
+  const ov = await read('overview.json');
+  const flows = await Promise.all(ov.flows.map(async (f, i) => ({ ...f, n: i + 1, ...(await loadFlow(`${dir}flows/${f.id}/`, {})) })));
+  const px = (f, id) => `${f.id}-${id}`;
+  const target = (f, t) => t.source === 'checks' ? { ...t, path: `${f.id}.${t.path}` } : { ...t, step: px(f, t.step) };
+  const capture = {
+    viewport: flows[0].capture.viewport,
+    capturedAt: flows[0].capture.capturedAt,
+    interactions: flows.reduce((n, f) => n + f.capture.interactions, 0),
+    steps: flows.flatMap(f => f.capture.steps.map(s => ({ ...s, id: px(f, s.id), flow: f.id, screenshot: { ...s.screenshot, file: `flows/${f.id}/${s.screenshot.file}` } }))),
+  };
+  const checks = Object.fromEntries(flows.map(f => [f.id, f.checks]));
+  const statuses = flows.map(f => f.audit.meta.status);
+  const audit = {
+    ...ov,
+    meta: { ...ov.meta, task: ov.meta.goal, status: statuses.every(x => x === 'completed') ? 'completed' : 'partial' },
+    journey: flows.flatMap(f => f.audit.journey.map(j => ({ ...j, step: px(f, j.step), flow: f.id, findings: (j.findings ?? []).map(x => px(f, x)) }))),
+    findings: flows.flatMap(f => f.audit.findings.map(x => ({
+      ...x, id: px(f, x.id), flow: f.id, step: x.step && px(f, x.step), target: target(f, x.target),
+      related: x.related?.map(r => ({ ...r, step: px(f, r.step) })),
+    }))),
+    patterns: ov.patterns ?? [],
+  };
+  return { capture, checks, audit, flows };
+}
+
+const [{ capture, checks, audit, flows = null }, cssBody, sans] = await Promise.all([
+  multi ? loadMulti() : loadFlow(dir),
   readFile(new URL('./report.css', import.meta.url), 'utf8'),
-  font('Inter-Variable-latin.woff2'), font('GeistMono-Variable.woff2'),
+  font('Inter-Variable-latin.woff2'),
 ]);
-// Fonts are embedded so the report renders the same offline and in print. Inter and Geist Mono, SIL OFL 1.1.
+// The font is embedded so the report renders the same offline and in print. Inter, SIL OFL 1.1.
 const css = `@font-face{font-family:"Inter";src:url(data:font/woff2;base64,${sans}) format("woff2");font-weight:100 900;font-display:block}
-@font-face{font-family:"Geist Mono";src:url(data:font/woff2;base64,${mono}) format("woff2");font-weight:100 900;font-display:block}
 ${cssBody}`;
 
 const AGENT = JSON.parse(await readFile(new URL('./agent.json', import.meta.url), 'utf8'));
 
-const problems = validate({ capture, checks, audit });
+const problems = validate({ capture, checks, audit, flows });
 if (problems.length) {
   console.error(`Report not built: ${problems.length} problem(s)\n- ${problems.join('\n- ')}`);
   process.exit(1);
@@ -39,9 +78,12 @@ const tagged = (url, content) => {
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const pct = (v, total) => `${((v / total) * 100).toFixed(3)}%`;
-const steps = Object.fromEntries(capture.steps.map((s, i) => [s.id, { ...s, n: i + 1 }]));
-// Supplementary screenshots from the checks run share the viewport of the main run.
-steps.s2b = { id: 's2b', n: 2, title: 'Shape selected (repeat run)', screenshot: { file: 'assets/s2b.png', cssWidth: capture.viewport.width, cssHeight: capture.viewport.height }, targets: [] };
+// Steps are numbered within their flow.
+const steps = Object.fromEntries(capture.steps.map((s, i) => [s.id, { ...s, n: s.flow ? capture.steps.filter((x, k) => k <= i && x.flow === s.flow).length : i + 1 }]));
+const flowOf = Object.fromEntries((flows ?? []).map(f => [f.id, f]));
+// "step 3" in a one-flow audit, "flow 2 step 3" when there are several.
+const stepName = s => s.flow ? `flow ${flowOf[s.flow].n} step ${s.n}` : `step ${s.n}`;
+const isFinding = r => /(^|-)F\d+$/.test(r);
 
 const dig = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj);
 function targetBox(t) {
@@ -100,9 +142,9 @@ const icon = k => `<span class="ic" aria-hidden="true">${ICON[k] ?? ''}</span>`;
 const fIndex = Object.fromEntries(audit.findings.map((f, i) => [f.id, i + 1]));
 // Finding refs use the same numbered disc as the marks on screenshots; step refs are quiet grey tags.
 const fTitle = Object.fromEntries(audit.findings.map(f => [f.id, f.title]));
-const refLink = r => r.startsWith('F')
+const refLink = r => isFinding(r)
   ? `<a class="ref ref--f" href="#${r}" title="${esc(fTitle[r] ?? r)}"><i>${fIndex[r] ?? '?'}</i>Finding</a>`
-  : `<a class="ref" href="#journey-${r}">Step ${steps[r]?.n ?? r}</a>`;
+  : `<a class="ref" href="#journey-${r}">${steps[r] ? stepName(steps[r]).replace(/^./, c => c.toUpperCase()) : r}</a>`;
 const refs = list => list?.length ? `<span class="refs">${list.map(refLink).join('')}</span>` : '';
 
 const m = audit.meta;
@@ -111,8 +153,8 @@ const interactionsToValue = capture.steps.find(s => s.id === valueStep)?.interac
 // A partial or blocked audit has no first-value step; the stat then names where the task stopped.
 const stopStep = audit.journey.find(j => j.status === 'blocked')?.step ?? audit.journey.at(-1).step;
 const valueStat = valueStep
-  ? `<span class="stat">${interactionsToValue}</span><span class="stat__label">${icon('flag')}Interactions to first value</span><span class="stat__sub">Reached at step ${steps[valueStep].n}</span>`
-  : `<span class="stat">None</span><span class="stat__label">${icon('flag')}First value</span><span class="stat__sub">Not reached; stopped at step ${steps[stopStep].n}</span>`;
+  ? `<span class="stat">${interactionsToValue}</span><span class="stat__label">${icon('flag')}Interactions to first value</span><span class="stat__sub">Reached at ${stepName(steps[valueStep])}</span>`
+  : `<span class="stat">None</span><span class="stat__label">${icon('flag')}First value</span><span class="stat__sub">Not reached; stopped at ${stepName(steps[stopStep])}</span>`;
 const statusClass = { completed: '', partial: ' status--partial', blocked: ' status--blocked' }[m.status] ?? '';
 const sevCount = audit.findings.reduce((a, f) => (a[f.severity] = (a[f.severity] || 0) + 1, a), {});
 const findingMix = Object.entries(sevCount).map(([k, n]) => `${n} ${SEVERITY[k].label.toLowerCase()}`).join(', ').replace(/^./, c => c.toUpperCase());
@@ -170,6 +212,32 @@ const header = `
   </dl>
 </header>`;
 
+// Several flows: the header lists them with why each was chosen; each flow's own outcome sits above its journey.
+const DEPTH = { quick: 'Quick', standard: 'Standard', deep: 'Deep' };
+const flowsReached = flows?.filter(f => f.audit.journey.some(j => j.firstValue)).length;
+const multiHeader = () => `
+<header id="overview">
+  <div class="title">
+    <p class="kicker"><span>${esc(m.product)} <a href="${esc(m.url)}">${esc(m.url.replace(/^https?:\/\//, ''))}</a></span><span>${flows.length} flows, ${esc(DEPTH[m.depth] ?? m.depth)} depth, ${esc(date)}</span></p>
+    <h1>${esc(m.goal)}</h1>
+    ${m.goalDetail ? `<p class="title__task">${esc(m.goalDetail)}</p>` : ''}
+  </div>
+  <div class="outcome">
+    <div class="outcome__top"><span class="status${statusClass}">${esc(m.status[0].toUpperCase() + m.status.slice(1))}</span><p class="outcome__note">${esc(m.statusNote ?? '')}</p></div>
+    <div class="stats">
+      <div><span class="stat">${flowsReached} of ${flows.length}</span><span class="stat__label">${icon('flag')}Flows that reached first value</span><span class="stat__sub">Each flow's own result is above its journey</span></div>
+      <div><span class="stat">${capture.interactions}</span><span class="stat__label">${icon('check')}Interactions in total</span><span class="stat__sub">Across ${capture.steps.length} screens</span></div>
+      <div><span class="stat">${audit.findings.length}</span><span class="stat__label">${icon('search')}Findings</span><span class="stat__sub">${findingMix}</span></div>
+    </div>
+  </div>
+  <ol class="flows">${flows.map(f => `<li><a href="#journey-${f.id}"><span class="flows__n">Flow ${f.n}</span><b>${esc(f.audit.meta.task)}</b></a><p>${esc(f.why)}</p><span class="status${{ completed: '', partial: ' status--partial', blocked: ' status--blocked' }[f.audit.meta.status] ?? ''}">${esc(f.audit.meta.status[0].toUpperCase() + f.audit.meta.status.slice(1))}</span></li>`).join('')}</ol>
+  <dl class="scope">
+    <div><dt>${icon('crop')}Depth</dt><dd>${esc(m.depthNote ?? `${DEPTH[m.depth] ?? m.depth}: ${flows.length} flows chosen with the user.`)}</dd></div>
+    <div><dt>${icon('browser')}Starting state</dt><dd>${esc(m.startingState)}</dd></div>
+    <div><dt>${icon('monitor')}Environment</dt><dd>${esc(m.environment)}</dd></div>
+    <div><dt>${icon('stars')}Made by</dt><dd>${esc(AGENT.madeBy)}</dd></div>
+  </dl>
+</header>`;
 const row = (name, ic, items, emptyNote) => `<div class="kccn__row">
     <h3>${icon(ic)}${name}${items.length ? `<span class="kccn__n">${items.length}</span>` : ''}</h3>
     ${items.length
@@ -187,11 +255,7 @@ const summary = `
   </div>
 </section>`;
 
-const journey = `
-<section class="section section--break" id="journey">
-  <div class="section__head"><div><h2>The task, step by step</h2><p class="section__lede">Every state below was captured in the browser run. Interaction counts are cumulative: clicks, drags, key presses and typed strings.</p></div></div>
-  <ol class="journey">
-    ${audit.journey.map(j => {
+const journeyItem = j => {
       const s = steps[j.step];
       return `<li id="journey-${s.id}">
         <span class="n">${String(s.n).padStart(2, '0')}</span>
@@ -205,14 +269,28 @@ const journey = `
           <div class="meta">${j.firstValue ? '<span class="chip chip--first">First value</span>' : ''}<span class="chip">${s.interactionsSoFar ? `${s.interactionsSoFar} interactions` : 'Start'}</span>${j.status === 'done-verified-separately' ? '<span class="chip">Verified in a second run</span>' : ''}${j.status === 'blocked' ? '<span class="chip chip--blocked">Blocked here</span>' : ''}${(j.findings ?? []).map(id => `<a class="ref ref--f" href="#${id}"><i>${fIndex[id]}</i>${esc(audit.findings.find(f => f.id === id).target.label)}</a>`).join('')}</div>
         </div>
       </li>`;
-    }).join('')}
-  </ol>
+};
+// Several flows: Journey and Findings each get a row of flow tabs; picking one shows that flow in both.
+// Without the script every flow shows, one after another.
+const flowTabs = kind => `<div class="flowtabs" role="tablist" aria-label="Flows">${flows.map(f => `<button type="button" role="tab" data-flow="${f.id}"><span class="flows__n">Flow ${f.n}</span>${esc(f.audit.meta.task)}<span class="toc__n">${kind === 'findings' ? audit.findings.filter(x => x.flow === f.id).length : f.capture.steps.length}</span></button>`).join('')}</div>`;
+const flowPanel = (f, inner) => `<div class="flowpanel" data-flow="${f.id}" role="tabpanel">${inner}</div>`;
+const flowScope = f => `<dl class="scope flowscope">
+      <div><dt>${icon('flag')}Result</dt><dd><span class="status${{ completed: '', partial: ' status--partial', blocked: ' status--blocked' }[f.audit.meta.status] ?? ''}">${esc(f.audit.meta.status[0].toUpperCase() + f.audit.meta.status.slice(1))}</span> ${esc(f.audit.meta.statusNote ?? '')}</dd></div>
+      <div><dt>${icon('target')}Success means</dt><dd>${esc(f.audit.meta.success)}</dd></div>
+      <div><dt>${icon('stars')}First value</dt><dd>${esc(f.audit.meta.firstValue)}</dd></div>
+      <div><dt>${icon('crop')}Why this flow</dt><dd>${esc(f.why)}</dd></div>
+    </dl>`;
+
+const journey = `
+<section class="section section--break" id="journey">
+  <div class="section__head"><div><h2>The task, step by step</h2><p class="section__lede">Every state below was captured in the browser run. Interaction counts are cumulative: clicks, drags, key presses and typed strings.</p></div></div>
+  ${flows ? `${flowTabs('journey')}${flows.map(f => flowPanel(f, `<div id="journey-${f.id}">${flowScope(f)}<ol class="journey">${audit.journey.filter(j => j.flow === f.id).map(journeyItem).join('')}</ol></div>`)).join('')}` : `<ol class="journey">
+    ${audit.journey.map(journeyItem).join('')}
+  </ol>`}
 </section>`;
 
-const findings = `
-<section class="section section--break" id="findings">
-  <div class="section__head"><div><h2>Annotated walkthrough</h2><p class="section__lede">Solid marks point at the element a finding is about. Dashed marks show related context. Positions come from the page's DOM, not from reading the image.</p></div></div>
-  ${audit.findings.map(f => {
+
+const findingCard = f => {
     const n = fIndex[f.id];
     const box = targetBox(f.target);
     const step = steps[f.target.source === 'checks' ? f.step : f.target.step];
@@ -221,7 +299,7 @@ const findings = `
     const relOther = related.filter(r => r.step.id !== step.id);
     const zoom = box ? crop(step, box, n) : '<p class="caption">Element could not be located in the DOM; no precise mark.</p>';
     const context = shot(step, [{ box, label: n }, ...relSameStep.map(r => ({ box: r.box, label: '·', ref: true }))], `${step.title}, full screen`);
-    const others = relOther.map(r => `<div>${shot(r.step, [{ box: r.box, label: '·', ref: true }], r.label)}<p class="caption"><span>${esc(r.label)}</span><span>step ${r.step.n}</span></p></div>`).join('');
+    const others = relOther.map(r => `<div>${shot(r.step, [{ box: r.box, label: '·', ref: true }], r.label)}<p class="caption"><span>${esc(r.label)}</span><span>${stepName(r.step)}</span></p></div>`).join('');
     const sev = SEVERITY[f.severity];
     return `<article class="finding" id="${f.id}">
       <div class="finding__head">
@@ -229,7 +307,7 @@ const findings = `
         <div><h3 class="finding__title">${esc(f.title)}</h3>
           <p class="sev">${sevBar(f.severity)}${f.consequence === 'high' ? '<span class="tag tag--plain">High consequence if it happens</span>' : ''}<span class="sev__note">Confidence ${esc(f.confidence)}</span></p></div>
       </div>
-      <div class="finding__figs"><div>${zoom}<p class="caption"><span>${esc(f.target.label)}</span><span>step ${step.n}, zoomed</span></p></div><div class="finding__side"><div>${context}<p class="caption"><span>${esc(step.title)}</span><span>full screen</span></p></div>${others}</div></div>
+      <div class="finding__figs"><div>${zoom}<p class="caption"><span>${esc(f.target.label)}</span><span>${stepName(step)}, zoomed</span></p></div><div class="finding__side"><div>${context}<p class="caption"><span>${esc(step.title)}</span><span>full screen</span></p></div>${others}</div></div>
       <dl class="finding__body">
         <div><dt>Observed</dt><dd>${esc(f.observed)}</dd></div>
         <div><dt>Why it matters</dt><dd>${esc(f.matters)}</dd></div>
@@ -238,7 +316,15 @@ const findings = `
         <div><dt>Evidence</dt><dd>${esc(f.evidence)}${f.disagreement ? ` ${esc(f.disagreement)}` : ''}</dd></div>
       </dl>
     </article>`;
-  }).join('')}
+};
+const findingsLede = 'Solid marks point at the element a finding is about. Dashed marks show related context. Positions come from the page\'s DOM, not from reading the image.';
+const findings = `
+<section class="section section--break" id="findings">
+  <div class="section__head"><div><h2>Annotated walkthrough</h2><p class="section__lede">${findingsLede}</p></div></div>
+  ${flows ? `${flowTabs('findings')}${flows.map(f => {
+    const own = audit.findings.filter(x => x.flow === f.id);
+    return flowPanel(f, own.length ? own.map(findingCard).join('') : '<p class="empty">Nothing in this flow passed the evidence gates.</p>');
+  }).join('')}` : audit.findings.map(findingCard).join('')}
 </section>`;
 
 // Priorities as lanes of ready-to-file tasks. Each card carries its own issue text for "Copy as issue".
@@ -298,12 +384,21 @@ const limits = `
 
 </section>`;
 
+// Problems seen in more than one flow; only a multi-flow audit has them.
+const patterns = audit.patterns?.length ? `
+<section class="section section--break" id="patterns">
+  <div class="section__head"><div><h2>Patterns across flows</h2><p class="section__lede">The same problem in more than one flow. One fix helps everywhere it appears.</p></div></div>
+  <div class="kccn">${audit.patterns.map(p => row(esc(p.title), 'search', [{ text: p.text, refs: p.refs }])).join('')}</div>
+</section>` : '';
+
+// In a multi-flow report the active Journey or Findings link opens small flow tabs next to it in the bar.
+const navFlows = section => flows ? `<span class="toc__sub">${flows.map(f => `<button type="button" data-flow="${f.id}" data-section="${section}" title="${esc(f.audit.meta.task)}">Flow ${f.n}</button>`).join('')}</span>` : '';
 const nav = `
 <nav class="toc" aria-label="Report sections"><div class="toc__bar">
   <a href="#overview">Overview</a>
-  <a href="#summary">Summary</a>
-  <a href="#journey">Journey</a>
-  <a href="#findings">Findings<span class="toc__n">${audit.findings.length}</span></a>
+  <a href="#summary">Summary</a>${audit.patterns?.length ? '<a href="#patterns">Patterns</a>' : ''}
+  <a href="#journey">Journey</a>${navFlows('journey')}
+  <a href="#findings">Findings<span class="toc__n">${audit.findings.length}</span></a>${navFlows('findings')}
   <a href="#recommendations">Priorities</a>
   <a href="#limits">Limits</a>
 </div></nav>`;
@@ -342,6 +437,26 @@ const io = new IntersectionObserver(es => es.forEach(e => {
   links.forEach(a => a.toggleAttribute('aria-current', a.hash === '#' + e.target.id));
 }), { rootMargin: '-40% 0px -55% 0px' });
 links.forEach(a => { const s = document.querySelector(a.hash); if (s) io.observe(s); });
+// Flow tabs: one choice drives Journey and Findings together; a link into a flow selects it first.
+const tabs = [...document.querySelectorAll('.flowtabs [data-flow], .toc__sub [data-flow]')];
+if (tabs.length) {
+  const pick = id => {
+    tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.flow === id));
+    document.querySelectorAll('.flowpanel').forEach(p => { p.hidden = p.dataset.flow !== id; });
+  };
+  tabs.forEach(t => t.addEventListener('click', () => {
+    pick(t.dataset.flow);
+    if (t.dataset.section) document.getElementById(t.dataset.section).scrollIntoView();
+  }));
+  const follow = () => {
+    const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    const panel = t?.closest('.flowpanel');
+    if (panel) { pick(panel.dataset.flow); t.scrollIntoView(); }
+  };
+  pick(tabs[0].dataset.flow);
+  addEventListener('hashchange', follow);
+  follow();
+}
 </script>`;
 
 const colophon = `
@@ -358,11 +473,11 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="ux-audit-agent">
+<meta name="generator" content="ux-audit-agent by Andriy Yurchenko (https://ayurchenko.xyz)">\n<!-- Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz). Report generated by ux-audit-agent. -->
 <title>${esc(m.product)} task audit</title>
 <style>${css}</style>
 </head>
-<body><main class="page">${nav}${header}${summary}${journey}${findings}${recs}${severityKey}${limits}${cta()}${colophon}</main>${spy}</body>
+<body><main class="page">${nav}${flows ? multiHeader() : header}${summary}${patterns}${journey}${findings}${recs}${severityKey}${limits}${cta()}${colophon}</main>${spy}</body>
 </html>`;
 
 await writeFile(`${dir}index.html`, html);
@@ -370,14 +485,14 @@ console.log('wrote', `${dir}index.html`);
 
 // --single: one shareable file with every screenshot embedded.
 if (process.argv.includes('--single')) {
-  const files = [...new Set([...html.matchAll(/src="(assets\/[^"]+)"/g)].map(x => x[1]))];
+  const files = [...new Set([...html.matchAll(/src="((?:flows\/[a-z0-9]+\/)?assets\/[^"]+)"/g)].map(x => x[1]))];
   const mime = f => (f.endsWith('.png') ? 'image/png' : 'image/jpeg');
   const data = Object.fromEntries(await Promise.all(files.map(async f => [f, `data:${mime(f)};base64,${(await readFile(`${dir}${f}`)).toString('base64')}`])));
   // Each screenshot is embedded once; its other uses (thumbnail, zoom, full screen) copy it on load.
   const seen = new Set();
   const blank = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   const single = html
-    .replace(/src="(assets\/[^"]+)"/g, (_, f) => (seen.has(f) ? `data-asset="${f}" src="${blank}"` : (seen.add(f), `data-asset="${f}" src="${data[f]}"`)))
+    .replace(/src="((?:flows\/[a-z0-9]+\/)?assets\/[^"]+)"/g, (_, f) => (seen.has(f) ? `data-asset="${f}" src="${blank}"` : (seen.add(f), `data-asset="${f}" src="${data[f]}"`)))
     .replace('</body>', `<script>for (const i of document.querySelectorAll('img[data-asset]')) i.src = document.querySelector(\`img[data-asset="\${i.dataset.asset}"]\`).src;</script></body>`);
   const name = `${slug}-task-audit.html`;
   await writeFile(`${dir}${name}`, single);

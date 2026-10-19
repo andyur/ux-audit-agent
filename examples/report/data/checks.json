@@ -1,43 +1,84 @@
 {
-  "fileSystemAccessApi": true,
-  "flowchartShortcut": {
-    "interactionsToTwoConnectedBoxes": 7,
-    "elementsAfterShortcut": {
-      "rectangle": 2,
-      "text": 1,
-      "arrow": 1
+  "defaultViewNotice": {
+    "text": "Linear Agent is now your default view",
+    "box": {
+      "x": 672.40234375,
+      "y": 81.25,
+      "width": 215.359375,
+      "height": 14.5
     },
-    "hintWhileSelected": {
-      "text": "Enter to add text, Cmd + ↑↓ to create a flowchart",
-      "box": {
-        "x": 449,
-        "y": 68,
-        "width": 542,
-        "height": 24
-      },
-      "fontSize": "12px",
-      "color": "rgb(184, 184, 184)"
-    },
-    "note": "second box not yet labelled"
+    "measuredAt": "2026-10-19T19:01:52.977Z"
   },
-  "dialogOpenAfterExport": true,
-  "checkedAt": "2026-10-14T18:32:22.629Z",
-  "exportViaSavePicker": {
-    "dialogButtons": [
-      "Export to PNG",
-      "Export to SVG",
-      "Copy PNG to clipboard"
-    ],
-    "saveCalls": [
-      {
-        "suggestedName": "Untitled-2026-10-14-2132.png",
-        "types": [
-          "image/png"
-        ],
-        "bytes": 5218,
-        "mime": "image/png"
-      }
-    ],
-    "dialogOpenAfterExport": true
+  "defaultViewContrast": {
+    "text": "Linear Agent is now your default view",
+    "box": {
+      "x": 672.40234375,
+      "y": 81.25,
+      "width": 215.359375,
+      "height": 14.5
+    },
+    "fontSize": "12px",
+    "color": "lch(91.201 1.65 272)",
+    "background": "rgb(12.945, 1.3, 272)",
+    "contrast": 1.16,
+    "measuredAt": "2026-10-19T19:01:53.979Z"
+  },
+  "newIssueButton": {
+    "text": "",
+    "box": {
+      "x": 208,
+      "y": 16,
+      "width": 28,
+      "height": 28
+    },
+    "measuredAt": "2026-10-19T19:02:16.472Z"
+  },
+  "assigneeDefault": {
+    "text": "Assignee",
+    "box": {
+      "x": 522.5390625,
+      "y": 286.5,
+      "width": 85.7265625,
+      "height": 24
+    },
+    "measuredAt": "2026-10-19T19:02:29.368Z"
+  },
+  "hiddenNote": {
+    "text": "2 issues hidden by display options",
+    "box": {
+      "x": 681.5,
+      "y": 546,
+      "width": 203.046875,
+      "height": 20.5
+    },
+    "measuredAt": "2026-10-19T19:03:05.698Z"
+  },
+  "hiddenNoteContrast": {
+    "text": "2 issues hidden by display options",
+    "box": {
+      "x": 681.5,
+      "y": 546,
+      "width": 203.046875,
+      "height": 20.5
+    },
+    "fontSize": "16px",
+    "color": "lch(100 0 272)",
+    "background": "rgb(5.52, 0.4, 272)",
+    "contrast": 1.2,
+    "measuredAt": "2026-10-19T19:03:06.897Z"
+  },
+  "emptyContrast": {
+    "text": "No matching issues",
+    "box": {
+      "x": 769.03125,
+      "y": 484.75,
+      "width": 141.9375,
+      "height": 23
+    },
+    "fontSize": "15px",
+    "color": "lch(61.803 1.2 272)",
+    "background": "rgb(5.52, 0.4, 272)",
+    "contrast": 1.07,
+    "measuredAt": "2026-10-19T19:03:07.375Z"
   }
 }

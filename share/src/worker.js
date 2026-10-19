@@ -1,3 +1,5 @@
+// Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz)
+// Licensed under PolyForm Shield 1.0.0 (LICENSE.md). Keep this notice in any copy or change.
 // Shareable links for ux-audit-agent reports, on r.ayurchenko.xyz. Free plan: one Worker and one KV namespace.
 //   POST /api/reports              upload a single-file report (raw HTML); returns the share and manage links
 //   POST /api/reports/<id>/delete  delete with the owner token (from the CLI or the owner bar)

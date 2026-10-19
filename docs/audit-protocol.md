@@ -4,12 +4,12 @@ One task, one workflow, observed in a real browser. The audit answers: can a per
 
 ## 1. Define the task before touching the product
 
-| Field | Example (Excalidraw) |
+| Field | Example (Linear) |
 |---|---|
-| Task | Draw a two-step flowchart and export it as a PNG |
-| Success | A PNG of the diagram is produced by the export action |
-| First value | A labelled, connected diagram on the canvas |
-| Starting state | Fresh browser profile, no account, empty canvas |
+| Task | Create a first issue, then find it again from My issues or Inbox |
+| Success | The new issue is found again from My issues or Inbox |
+| First value | The issue just created shows up in a list of my work |
+| Starting state | The user's own Chrome, signed in to a workspace with one team |
 
 The agent never signs up or enters passwords. If the task needs an account, the user signs in first and the audit starts from that state, which the report states.
 

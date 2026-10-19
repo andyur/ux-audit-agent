@@ -1,6 +1,6 @@
 {
   "name": "ux-audit-agent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Task audit of a live web product for Claude Code: walks one user task in your Chrome and writes an evidence-backed HTML report.",
   "scripts": {
     "render": "node render/render.mjs"

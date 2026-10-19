@@ -3,3 +3,4 @@ node_modules
 share/.wrangler/
 runs/
 .ux-audit/
+.DS_Store

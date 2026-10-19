@@ -1,11 +1,17 @@
+// Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz)
+// Licensed under PolyForm Shield 1.0.0 (LICENSE.md). Keep this notice in any copy or change.
 // Refuses to build a report whose claims are not tied to evidence.
 // Returns a list of errors; an empty list means the data is publishable.
+import { readFileSync } from 'node:fs';
 const STATUSES = ['completed', 'partial', 'blocked', 'insufficient'];
 const SEVERITIES = ['blocker', 'significant', 'minor', 'observation'];
 const LANES = ['now', 'next', 'test'];
+const DEPTHS = ['quick', 'standard', 'deep'];
+const ICONS = new Set(Object.keys(JSON.parse(readFileSync(new URL('./icons.json', import.meta.url), 'utf8'))));
 const filled = v => typeof v === 'string' && v.trim().length > 0;
 
-export function validate({ capture, checks, audit }) {
+// flows is set for a multi-flow audit: ids in capture and audit then carry the flow id as a prefix.
+export function validate({ capture, checks, audit, flows }) {
   const errors = [];
   const err = (where, msg) => errors.push(`${where}: ${msg}`);
   const stepIds = new Set(capture.steps.map(s => s.id));
@@ -13,8 +19,25 @@ export function validate({ capture, checks, audit }) {
   const refOk = r => stepIds.has(r) || findingIds.has(r);
 
   if (!STATUSES.includes(audit.meta?.status)) err('meta.status', `must be one of ${STATUSES.join(', ')}`);
-  for (const k of ['product', 'url', 'task', 'success', 'firstValue', 'startingState', 'environment']) {
-    if (!filled(audit.meta?.[k])) err(`meta.${k}`, 'missing');
+  const metaKeys = flows ? ['product', 'url', 'goal', 'startingState', 'environment'] : ['product', 'url', 'task', 'success', 'firstValue', 'startingState', 'environment'];
+  for (const k of metaKeys) if (!filled(audit.meta?.[k])) err(`meta.${k}`, 'missing');
+  if (flows) {
+    if (!DEPTHS.includes(audit.meta?.depth)) err('meta.depth', `must be one of ${DEPTHS.join(', ')}`);
+    if (new Set(flows.map(f => f.id)).size !== flows.length) err('flows', 'flow ids must be unique');
+    for (const f of flows) {
+      const w = `flow ${f.id}`;
+      if (!/^[a-z0-9]+$/.test(f.id)) err(w, 'id must be lowercase letters and digits only');
+      if (!filled(f.why)) err(w, 'why missing: say why this flow was chosen');
+      for (const k of ['task', 'success', 'firstValue']) if (!filled(f.audit.meta?.[k])) err(w, `meta.${k} missing`);
+      if (!STATUSES.includes(f.audit.meta?.status)) err(w, `meta.status must be one of ${STATUSES.join(', ')}`);
+      if (f.audit.meta?.status === 'completed' && !f.audit.journey.some(j => j.firstValue)) err(w, 'completed flow with no first-value step');
+    }
+    (audit.patterns ?? []).forEach((p, i) => {
+      const w = `patterns[${i}]`;
+      if (!filled(p.title) || !filled(p.text)) err(w, 'title or text missing');
+      if (!(p.refs ?? []).every(r => findingIds.has(r))) err(w, 'refs must be existing findings');
+      if (new Set((p.refs ?? []).map(r => r.split('-')[0])).size < 2) err(w, 'a pattern needs findings from at least two flows');
+    });
   }
 
   for (const s of capture.steps) {
@@ -26,7 +49,7 @@ export function validate({ capture, checks, audit }) {
     if (!stepIds.has(j.step)) err(`journey ${j.step}`, 'step not in capture');
     for (const f of j.findings ?? []) if (!findingIds.has(f)) err(`journey ${j.step}`, `unknown finding ${f}`);
   }
-  if (audit.meta?.status === 'completed' && !audit.journey.some(j => j.firstValue)) err('journey', 'completed audit with no first-value step');
+  if (!flows && audit.meta?.status === 'completed' && !audit.journey.some(j => j.firstValue)) err('journey', 'completed audit with no first-value step');
 
   for (const [cat, items] of Object.entries(audit.summary ?? {})) {
     if (!Array.isArray(items)) continue;
@@ -66,5 +89,6 @@ export function validate({ capture, checks, audit }) {
   });
 
   if (!audit.cannotSee?.length) err('cannotSee', 'the limits section is empty');
+  (audit.cannotSee ?? []).forEach((l, i) => { if (l.icon && !ICONS.has(l.icon)) err(`cannotSee[${i}]`, `unknown icon ${l.icon}; use one of ${[...ICONS].join(', ')}`); });
   return errors;
 }
