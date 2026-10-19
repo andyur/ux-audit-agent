@@ -1,6 +1,6 @@
 {
   "name": "ux-audit-agent",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Task audit of a live web product: walks one user task in your Chrome, captures DOM-measured screenshots and writes an evidence-backed HTML report.",
   "author": { "name": "Andriy Yurchenko", "url": "https://ayurchenko.xyz" },
   "homepage": "https://github.com/andyur/ux-audit-agent",

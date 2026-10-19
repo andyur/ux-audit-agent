@@ -59,16 +59,17 @@ ux-audit measure contrast ".hint" --as hintContrast
 ux-audit stop                                     # closes the audit tab and the connection
 ```
 
-- Use `look` before acting on a new screen; scope it (`look 'role=dialog'`) when the page is long. Selectors: `role=button[name="Video"s]` for an exact name, `text=/left$/` for a pattern.
+- Use `look` before acting on a new screen; scope it (`look 'role=dialog'`) when the page is long. `look` takes one selector, not a comma list. Selectors: `role=button[name="Video"s]` for an exact name, `text=/left$/` for a pattern.
 - To replace text already in a field: `act click` it, `act press ControlOrMeta+a`, then `act type`.
 - If the connection drops mid-audit (the tab was closed, or an hour passed without a command), run `start <current url> --continue` to keep the interaction count.
 - Capture each **meaningful state** (new screen, dialog, error, result), not every click.
+- **Personal data.** In the user's own browser the product shows their name, email and avatar (activity lines, assignee chips, subscriber avatars, account menu). On every capture where they appear, add `--mask '<css selector>'` (CSS, repeatable, such as `--mask 'a[href*="/profiles/"]'`): it blurs them in the screenshot only. Check the saved screenshots before writing the report; a report is meant to be shared.
 - Every element you might write about needs a `--target` at capture time. Positions come from the DOM; never estimate them from the screenshot.
 - Use `measure` for any number you will quote (contrast, size, text). Do not compute in your head.
 - If you get blocked, capture the blocking state and stop. Do not work around it.
 - Always run `ux-audit stop` when the walk is done, also after a block: in the user's own browser it closes the audit tab and the connection.
 
-**Several flows (Standard, Deep).** Run `ux-audit flow <id>` before each flow (`id` is lowercase letters and digits, such as `signup`); its captures and measurements go to `audit/flows/<id>/` and its interaction count starts at zero, in the same tab and connection. Walk one flow at a time, and as soon as it is walked, write its `audit/flows/<id>/data/audit.json` (step 5) before starting the next. From then on rely on that file, not on what the earlier pages looked like: do not re-read old `look` output. This keeps the context small enough for every flow to get the same care. In Deep, walk a flow's edges inside that same flow, as extra captured steps.
+**Several flows (Standard, Deep).** Run `ux-audit flow <id> [start url]` before each flow (`id` is lowercase letters and digits, such as `signup`; going to the start url is not counted as an interaction); its captures and measurements go to `audit/flows/<id>/` and its interaction count starts at zero, in the same tab and connection. Walk one flow at a time, and as soon as it is walked, write its `audit/flows/<id>/data/audit.json` (step 5) before starting the next. From then on rely on that file, not on what the earlier pages looked like: do not re-read old `look` output. This keeps the context small enough for every flow to get the same care. In Deep, walk a flow's edges inside that same flow, as extra captured steps.
 
 ## 4. Judge against the protocol
 

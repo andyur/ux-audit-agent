@@ -12,8 +12,8 @@
 //          --continue: reconnect mid-audit and keep the interaction count and clock.
 //   act    goto <url> | click <sel> | dblclick <sel> | hover <sel> | clickxy <x,y> | dblclickxy <x,y> | type <text> | press <key> | drag <x1,y1> <x2,y2>
 //   look [selector]                                       url, title and the accessibility tree of the page (or one part), to pick the next action
-//   flow <id>                                             next flow of a multi-flow audit: captures go to <out>/flows/<id>/
-//   capture <id> --title .. --action .. --response .. [--target id|label|selector ...]
+//   flow <id> [url]                                       next flow of a multi-flow audit: captures go to <out>/flows/<id>/; url = its start page, not counted
+//   capture <id> --title .. --action .. --response .. [--target id|label|selector ...] [--mask css-selector ...]
 //   measure contrast <selector> --as <name>               computed colour contrast into checks.json
 //   measure text <selector> --as <name>                   text content and box into checks.json
 //   render [--single]                                     validate and build the report
@@ -201,7 +201,12 @@ const browserCommands = {
     const file = `assets/${id}.jpg`;
     // Straight from the browser: Playwright's own screenshot ignores the emulated 2× scale on an attached browser.
     // JPEG keeps a ten-screen report under the 15 MB a shared link accepts; marks are drawn over it, not into it.
+    // --mask blurs personal data (names, emails, avatars) in the screenshot only; the page is restored after.
+    const masks = a.flags('mask');
+    const blur = on => pg.evaluate(([sels, on]) => sels.forEach(sel => document.querySelectorAll(sel).forEach(n => { n.style.filter = on ? 'blur(8px)' : ''; })), [masks, on]);
+    if (masks.length) await blur(true).catch(e => fail(`--mask: ${e.message.split('\n')[0]}`));
     const { data } = await cdp.send('Page.captureScreenshot', { format: 'jpeg', quality: 85 });
+    if (masks.length) await blur(false);
     await writeFile(path.join(state.out, file), Buffer.from(data, 'base64'));
     const view = await pg.evaluate(() => ({ w: innerWidth, h: innerHeight, dpr: devicePixelRatio, x: scrollX, y: scrollY, ua: navigator.userAgent }));
     const targets = [];
@@ -438,14 +443,16 @@ const commands = {
   // The next flow of a multi-flow audit, in the same tab: captures go to <out>/flows/<id>/ and the
   // interaction count starts again at zero. The audit folder stays the one start was given.
   async flow(a) {
-    const id = a.rest[0] ?? fail('flow needs an id');
+    const [id = fail('flow needs an id'), url] = a.rest;
     if (!/^[a-z0-9]+$/.test(id)) fail('A flow id is lowercase letters and digits only, such as signup or invite.');
     const state = await liveState();
     const root = state.root ?? state.out;
     const out = path.join(root, 'flows', id);
     await mkdir(path.join(out, 'assets'), { recursive: true });
     await mkdir(path.join(out, 'data'), { recursive: true });
-    await saveState({ ...state, root, out, startedAt: Date.now(), interactions: 0 });
+    // A start URL is where the flow begins, not a user action, so going there is not counted.
+    if (url) await send(['act', 'goto', url]);
+    await saveState({ ...(await loadState()), root, out, startedAt: Date.now(), interactions: 0 });
     return { ok: true, flow: id, out };
   },
 

@@ -1,18 +1,16 @@
 # ux-audit-agent: UX audit agent for Claude Code
 
-A UX audit agent for Claude Code. You name one task in your live web product ("sign up and create a first project"), or let it propose two or three core flows; the agent walks them in a tab of your own browser, captures every meaningful screen with element positions measured from the DOM, and writes an evidence-backed HTML report a founder can act on. Use it for an onboarding audit, a usability review of one flow, or a first-run check before launch. It runs as a Claude Code plugin and drives the browser with Playwright.
+A UX audit agent for Claude Code. It walks a task in your live web product, in your own browser, and writes an evidence-backed report with marked screenshots. Use it for an onboarding audit, a usability review of a flow, or a first-run check before launch.
 
-[![Finding 1 from the Linear example: a new issue has no assignee by default, so it is missing from My issues, which opens on Assigned](docs/images/report-finding.png)](examples/report/)
+[![Finding from the Linear example: a new issue has no assignee by default, so it is missing from My issues, which opens on Assigned](docs/images/report-finding.png)](examples/report/)
 
-**Example: Linear.** Task: create a first issue, then find it again. The agent found that a new issue has no assignee by default, while My issues opens on the Assigned tab, so the issue you just made is not there and the empty state blames display options. The full report is in [`examples/report/`](examples/report/); open `index.html` locally.
+**Found in Linear:** a new issue has no assignee, and My issues opens on Assigned, so the issue you just made is not there. [Full example report](examples/report/) (open `index.html` locally).
 
-The report has:
+How it works:
 
-- **Summary:** what to keep, cut, change and do next, each line pointing to its evidence.
-- **Journey:** every captured state with the action taken and the product's response.
-- **Findings:** zoomed evidence with marks placed from the DOM, then observed, why it matters, hypothesis, recommendation and evidence.
-- **Priorities:** Now, Next and Test first, each a task you can copy into Linear, Jira or GitHub.
-- **Limits:** what this audit cannot see.
+1. You type `/audit`, give a URL and a task, or let it propose two or three core flows.
+2. It walks them in a tab of your Chrome, Edge or Brave, capturing each screen and measuring elements in the DOM.
+3. You get one HTML report: what to keep, cut and change, annotated findings, and priorities you can paste into Linear, Jira or GitHub.
 
 ## Install
 
