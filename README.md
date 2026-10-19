@@ -2,7 +2,7 @@
 
 A UX audit agent for Claude Code. It walks a task in your live web product, in your own browser, and writes an evidence-backed report with marked screenshots. Use it for an onboarding audit, a usability review of a flow, or a first-run check before launch.
 
-[![Finding from the Linear example: a new issue has no assignee by default, so it is missing from My issues, which opens on Assigned](docs/images/report-finding.png)](examples/report/)
+[![Found by ux-audit-agent in Linear: the issue you just made is not in My issues. The create dialog leaves Assignee empty, My issues opens on Assigned, and the empty state says No matching issues](docs/images/report-finding.png)](examples/report/)
 
 **Found in Linear:** a new issue has no assignee, and My issues opens on Assigned, so the issue you just made is not there. [Full example report](examples/report/) (open `index.html` locally).
 
