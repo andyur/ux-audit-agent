@@ -85,6 +85,6 @@ Nothing, unless you ask for a shareable link. Screenshots, data and the report s
 
 [PolyForm Shield 1.0.0](LICENSE.md). You may use and change it, including at work and on your company's products. You may not use it to build a product or service that competes with the author's, such as a rebranded audit tool or audit service.
 
-Made by [Andriy Yurchenko](https://ayurchenko.xyz), product designer.
+Made by [Andriy Yurchenko](https://ayurchenko.xyz/about), AI product architect and designer. Why I built it and how it works: [Free AI UX audit tool for Claude Code](https://ayurchenko.xyz/writing/ux-audit-agent).
 
 Required Notice: Copyright Andriy Yurchenko (https://ayurchenko.xyz). Under the license, this line and `LICENSE.md` stay with every copy, changed or not.
